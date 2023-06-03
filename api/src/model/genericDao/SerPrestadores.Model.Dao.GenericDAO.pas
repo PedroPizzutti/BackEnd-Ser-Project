@@ -22,8 +22,8 @@ type
     ['{208A66C3-802F-4EEA-9950-D30411E42797}']
     function Find: TJSONArray; overload;
     function Find(const AId: Int64): TJSONObject; overload;
-    function Insert(const AJSONObject: TJSONObject): TJSONObject;
-    function Update(const AJSONObject: TJSONObject): TJSONObject;
+    function Insert(const AEntity: T): TJSONObject;
+    function Update(const AEntity: T): TJSONObject;
     function Delete(AField: String; AValue: String): TJSONObject;
     function DAO: ISimpleDAO<T>;
     function DataSet: TDataSet;
@@ -44,8 +44,8 @@ type
     
       function Find: TJSONArray; overload;
       function Find(const AId: Int64): TJSONObject; overload;
-      function Insert(const AJSONObject: TJSONObject): TJSONObject;
-      function Update(const AJSONObject: TJSONObject): TJSONObject;
+      function Insert(const AEntity: T): TJSONObject;
+      function Update(const AEntity: T): TJSONObject;
       function Delete(AField: String; AValue: String): TJSONObject;
       function DAO: ISimpleDAO<T>;
       function DataSet: TDataSet;
@@ -111,9 +111,9 @@ begin
   Result := FDataSource.DataSet.AsJSONObject;
 end;
 
-function TGenericDAO<T>.Insert(const AJSONObject: TJSONObject): TJSONObject;
+function TGenericDAO<T>.Insert(const AEntity: T): TJSONObject;
 begin
-  FDAO.Insert(TJson.JsonToObject<T>(AJSONObject));
+  FDAO.Insert(AEntity);
   Result := FDataSource.DataSet.AsJSONObject;
 end;
 
@@ -122,9 +122,9 @@ begin
   Result := Self.Create;
 end;
 
-function TGenericDAO<T>.Update(const AJSONObject: TJSONObject): TJSONObject;
+function TGenericDAO<T>.Update(const AEntity: T): TJSONObject;
 begin
-  FDAO.Update(TJson.JsonToObject<T>(AJSONObject));
+  FDAO.Update(AEntity);
   Result := FDataSource.DataSet.AsJSONObject;
 end;
 

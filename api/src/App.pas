@@ -8,7 +8,8 @@ uses
   Horse,
   Horse.CORS,
   Horse.Jhonson,
-  Horse.GBSwagger;
+  Horse.GBSwagger,
+  SerPrestadores.Controller.Provider;
 
 type
   TApp = class
@@ -37,7 +38,6 @@ end;
 
 destructor TApp.Destroy;
 begin
-  //TODO
   inherited;
 end;
 
@@ -61,7 +61,7 @@ end;
 
 procedure TApp.RegisterRoutes;
 begin
-  //TODO
+  THorseGBSwaggerRegister.RegisterPath(TControllerProvider);
 end;
 
 procedure TApp.Start(const APort: Int64);
