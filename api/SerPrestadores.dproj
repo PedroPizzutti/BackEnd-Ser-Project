@@ -178,6 +178,7 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="src\App.pas"/>
+        <DCCReference Include="src\resource\connection\SerPrestadores.Resource.Connection.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -219,7 +220,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\SerPrestadores.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="dist\SerPrestadores.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SerPrestadores.exe</RemoteName>
                         <Overwrite>true</Overwrite>

@@ -6,7 +6,8 @@ program SerPrestadores;
 
 uses
   System.SysUtils,
-  App in 'src\App.pas';
+  App in 'src\App.pas',
+  SerPrestadores.Resource.Connection in 'src\resource\connection\SerPrestadores.Resource.Connection.pas';
 
 var
   App: TApp;
