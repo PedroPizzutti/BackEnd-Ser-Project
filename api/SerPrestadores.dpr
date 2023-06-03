@@ -7,7 +7,8 @@ program SerPrestadores;
 uses
   System.SysUtils,
   App in 'src\App.pas',
-  SerPrestadores.Resource.Connection in 'src\resource\connection\SerPrestadores.Resource.Connection.pas';
+  SerPrestadores.Resource.Connection in 'src\resource\connection\SerPrestadores.Resource.Connection.pas',
+  SerPrestadores.Model.Dao.GenericDAO in 'src\model\dao\SerPrestadores.Model.Dao.GenericDAO.pas';
 
 var
   App: TApp;

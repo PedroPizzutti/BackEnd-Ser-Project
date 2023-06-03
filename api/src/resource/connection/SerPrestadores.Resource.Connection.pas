@@ -30,19 +30,18 @@ type
     function Connect: TFDConnection;
   end;
 
-type
   TConnection = class(TInterfacedObject, IConnection)
-  private
-    var FConnection: TFDConnection;
-    procedure DataBaseConfig;
-    procedure Disconnect;
-  public
-    function Connect: TFDConnection;
+    private
+      var FConnection: TFDConnection;
+      procedure DataBaseConfig;
+      procedure Disconnect;
+    public
+      constructor Create;
+      destructor Destroy; override;
+      class function New: IConnection;
 
-    class function New: IConnection;
-    constructor Create;
-    destructor Destroy; override;
-  end;
+      function Connect: TFDConnection;
+    end;
 
 implementation
 

@@ -8,6 +8,8 @@
 	"dependencies": {
 		"github.com/hashload/horse-cors": "^1.0.6",
 		"github.com/hashload/jhonson": "^1.1.6",
+		"https://github.com/academiadocodigo/simpleorm": "^2.02.10",
+		"https://github.com/ezequieljuliano/datasetconverter4delphi": ">0.0.0",
 		"https://github.com/gabrielbaltazar/gbswagger": "^3.0.7"
 	}
 }
