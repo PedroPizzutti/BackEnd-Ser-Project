@@ -135,7 +135,7 @@ begin
   try
     FDAO
       .SQL
-      .Where(QuotedStr(AField)+ ' LIKE ' + QuotedStr('%' + AField +'%'))
+      .Where(AField + ' like ' + QuotedStr(AValue + '%'))
       .&End
       .Find;
 

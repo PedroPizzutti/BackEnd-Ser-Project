@@ -29,7 +29,7 @@ type
       [SwagResponse(200)]
       [SwagResponse(400)]
       [SwagResponse(500)]
-      procedure GetAll;
+      procedure Get;
 
       [SwagGET('/:id', 'List a provider in detail')]
       [SwagParamPath('id', 'Provider id')]
@@ -50,13 +50,20 @@ type
       [SwagResponse(400)]
       [SwagResponse(500)]
       procedure Post;
+
+      [SwagPUT('/:id', 'Update a provider')]
+      [SwagParamPath('id', 'Provider id')]
+      [SwagResponse(200)]
+      [SwagResponse(400)]
+      [SwagResponse(500)]
+      procedure Put;
   end;
 
 implementation
 
 { TControllerProvider }
 
-procedure TControllerProvider.GetAll;
+procedure TControllerProvider.Get;
 begin
   FDAO := TGenericDAO<TProviderEntity>.New;
   FResponse.Send<TJSONArray>(FDAO.Find);
@@ -98,6 +105,26 @@ begin
   FDAO.Insert(FRequest.Body<TJSONObject>);
 
   FResponse.Status(THTTPStatus.Created);
+end;
+
+procedure TControllerProvider.Put;
+var
+  LIdProvider: Int64;
+  LRequest: TJSONObject;
+begin
+  LIdProvider := FRequest.Params.Items['id'].ToInteger;
+  if LIdProvider <= 0 then
+  begin
+    raise EHorseException.New.Error('É necessário informar um id').Status(THTTPStatus.BadRequest);
+  end;
+
+  FDAO := TGenericDAO<TProviderEntity>.New;
+  FDAO.Find(LIdProvider);
+
+  LRequest := FRequest.Body<TJSONObject>;
+  LRequest.AddPair('id', LIdProvider);
+
+  FDAO.Update(LRequest);
 end;
 
 procedure TControllerProvider.ValidateProvider(AJSONObject: TJSONObject);
