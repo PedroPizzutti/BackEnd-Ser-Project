@@ -21,6 +21,7 @@ type
   [SwagPath('providers', 'Providers')]
   TControllerProvider = class(THorseGBSwagger)
     private
+      var FDAO: IGenericDAO<TProviderEntity>;
       procedure ValidateProvider(AJSONObject: TJSONObject);
     
     public
@@ -29,6 +30,20 @@ type
       [SwagResponse(400)]
       [SwagResponse(500)]
       procedure GetAll;
+
+      [SwagGET('/:id', 'List a provider in detail')]
+      [SwagParamPath('id', 'Provider id')]
+      [SwagResponse(200)]
+      [SwagResponse(400)]
+      [SwagResponse(500)]
+      procedure GetById;
+
+      [SwagGET('/search', 'Lists all the providers with liked name')]
+      [SwagParamQuery('name', 'filter by name')]
+      [SwagResponse(200)]
+      [SwagResponse(400)]
+      [SwagResponse(500)]
+      procedure GetByName;
 
       [SwagPOST('', 'Create a provider')]
       [SwagResponse(201)]
@@ -42,16 +57,40 @@ implementation
 { TControllerProvider }
 
 procedure TControllerProvider.GetAll;
-var
-  FDAO: IGenericDAO<TProviderEntity>;
 begin
   FDAO := TGenericDAO<TProviderEntity>.New;
   FResponse.Send<TJSONArray>(FDAO.Find);
 end;
 
-procedure TControllerProvider.Post;
+procedure TControllerProvider.GetById;
 var
-  FDAO: IGenericDAO<TProviderEntity>;
+  LIdProvider: Int64;
+begin
+  LIdProvider := FRequest.Params.Items['id'].ToInteger;
+  if LIdProvider <= 0 then
+  begin
+    raise EHorseException.New.Error('É necessário informar um id').Status(THTTPStatus.BadRequest);
+  end;
+
+  FDAO := TGenericDAO<TProviderEntity>.New;
+  FResponse.Send<TJSONObject>(FDAO.Find(LIdProvider));
+end;
+
+procedure TControllerProvider.GetByName;
+var
+  LName : String;
+begin
+  LName := FRequest.Query.Items['name'];
+  if LName.IsEmpty then
+  begin
+    raise EHorseException.New.Error('É necessário informar um nome').Status(THTTPStatus.BadRequest);
+  end;
+
+  FDAO := TGenericDAO<TProviderEntity>.New;
+  FResponse.Send<TJSONArray>(FDAO.FindByField('name', LName));
+end;
+
+procedure TControllerProvider.Post;
 begin
   ValidateProvider(FRequest.Body<TJSONObject>);
 

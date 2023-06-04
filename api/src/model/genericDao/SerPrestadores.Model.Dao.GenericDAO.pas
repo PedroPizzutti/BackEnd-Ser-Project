@@ -25,6 +25,7 @@ type
 
     function Find: TJSONArray; overload;
     function Find(const AId: Int64): TJSONObject; overload;
+    function FindByField(const AField: String; const AValue: String): TJSONArray;
     function Update(const AJSONObject: TJSONObject): TJSONObject;
     function Delete(AField: String; AValue: String): TJSONObject;
     function DAO: ISimpleDAO<T>;
@@ -48,6 +49,7 @@ type
 
       function Find: TJSONArray; overload;
       function Find(const AId: Int64): TJSONObject; overload;
+      function FindByField(const AField: String; const AValue: String): TJSONArray;
       function Update(const AJSONObject: TJSONObject): TJSONObject;
       function Delete(AField: String; AValue: String): TJSONObject;
       function DAO: ISimpleDAO<T>;
@@ -116,7 +118,28 @@ function TGenericDAO<T>.Find(const AId: Int64): TJSONObject;
 begin
   try
     FDAO.Find(AId);
+
+    if FDataSource.DataSet.RecordCount = 0 then
+    begin
+      raise EHorseException.New.Error('Provider não existe na base de dados').Status(THTTPStatus.BadRequest);
+    end;
+
     Result := FDataSource.DataSet.AsJSONObject;
+  except on E: Exception do
+    raise EHorseException.New.Error(E.Message).Status(THTTPStatus.InternalServerError);
+  end;
+end;
+
+function TGenericDAO<T>.FindByField(const AField, AValue: String): TJSONArray;
+begin
+  try
+    FDAO
+      .SQL
+      .Where(QuotedStr(AField)+ ' LIKE ' + QuotedStr('%' + AField +'%'))
+      .&End
+      .Find;
+
+    Result := FDataSource.DataSet.AsJSONArray;
   except on E: Exception do
     raise EHorseException.New.Error(E.Message).Status(THTTPStatus.InternalServerError);
   end;
