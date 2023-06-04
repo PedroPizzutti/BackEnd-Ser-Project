@@ -23,7 +23,8 @@ type
     private
       var FDAO: IGenericDAO<TProviderEntity>;
       procedure ValidateProvider(AJSONObject: TJSONObject);
-    
+      procedure ValidateId(AId: Int64);
+
     public
       [SwagGET('', 'Lists all the providers')]
       [SwagResponse(200)]
@@ -57,11 +58,33 @@ type
       [SwagResponse(400)]
       [SwagResponse(500)]
       procedure Put;
+
+      [SwagDELETE('/:id', 'Update a provider')]
+      [SwagParamPath('id', 'Provider id')]
+      [SwagResponse(204)]
+      [SwagResponse(400)]
+      [SwagResponse(500)]
+      procedure Delete;
   end;
 
 implementation
 
 { TControllerProvider }
+
+procedure TControllerProvider.Delete;
+var
+  LIdProvider: Int64;
+begin
+  LIdProvider := FRequest.Params.Items['id'].ToInteger;
+  Self.ValidateId(LIdProvider);
+
+  FDAO := TGenericDAO<TProviderEntity>.New;
+  FDAO.Find(LIdProvider);
+
+  FDAO.Delete('id', LIdProvider.ToString);
+
+  FResponse.Status(THTTPStatus.NoContent);
+end;
 
 procedure TControllerProvider.Get;
 begin
@@ -74,10 +97,7 @@ var
   LIdProvider: Int64;
 begin
   LIdProvider := FRequest.Params.Items['id'].ToInteger;
-  if LIdProvider <= 0 then
-  begin
-    raise EHorseException.New.Error('É necessário informar um id').Status(THTTPStatus.BadRequest);
-  end;
+  Self.ValidateId(LIdProvider);
 
   FDAO := TGenericDAO<TProviderEntity>.New;
   FResponse.Send<TJSONObject>(FDAO.Find(LIdProvider));
@@ -99,7 +119,7 @@ end;
 
 procedure TControllerProvider.Post;
 begin
-  ValidateProvider(FRequest.Body<TJSONObject>);
+  Self.ValidateProvider(FRequest.Body<TJSONObject>);
 
   FDAO := TGenericDAO<TProviderEntity>.New;
   FDAO.Insert(FRequest.Body<TJSONObject>);
@@ -113,10 +133,8 @@ var
   LRequest: TJSONObject;
 begin
   LIdProvider := FRequest.Params.Items['id'].ToInteger;
-  if LIdProvider <= 0 then
-  begin
-    raise EHorseException.New.Error('É necessário informar um id').Status(THTTPStatus.BadRequest);
-  end;
+
+  Self.ValidateId(LIdProvider);
 
   FDAO := TGenericDAO<TProviderEntity>.New;
   FDAO.Find(LIdProvider);
@@ -124,7 +142,17 @@ begin
   LRequest := FRequest.Body<TJSONObject>;
   LRequest.AddPair('id', LIdProvider);
 
+  Self.ValidateProvider(LRequest);
+
   FDAO.Update(LRequest);
+end;
+
+procedure TControllerProvider.ValidateId(AId: Int64);
+begin
+  if AId <= 0 then
+  begin
+    raise EHorseException.New.Error('É necessário informar um id').Status(THTTPStatus.BadRequest);
+  end;
 end;
 
 procedure TControllerProvider.ValidateProvider(AJSONObject: TJSONObject);
