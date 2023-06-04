@@ -7,6 +7,7 @@ uses
   System.JSON,
   Data.DB,
   REST.Json,
+  Horse,
   SimpleInterface,
   SimpleDAO,
   SimpleAttributes,
@@ -20,10 +21,11 @@ uses
 type
   IGenericDAO<T: class> = interface
     ['{208A66C3-802F-4EEA-9950-D30411E42797}']
+    procedure Insert(const AJSONObject: TJSONObject);
+
     function Find: TJSONArray; overload;
     function Find(const AId: Int64): TJSONObject; overload;
-    function Insert(const AEntity: T): TJSONObject;
-    function Update(const AEntity: T): TJSONObject;
+    function Update(const AJSONObject: TJSONObject): TJSONObject;
     function Delete(AField: String; AValue: String): TJSONObject;
     function DAO: ISimpleDAO<T>;
     function DataSet: TDataSet;
@@ -41,11 +43,12 @@ type
       constructor Create;
       destructor Destroy; override;
       class function New: IGenericDAO<T>;
-    
+
+      procedure Insert(const AJSONObject: TJSONObject);
+
       function Find: TJSONArray; overload;
       function Find(const AId: Int64): TJSONObject; overload;
-      function Insert(const AEntity: T): TJSONObject;
-      function Update(const AEntity: T): TJSONObject;
+      function Update(const AJSONObject: TJSONObject): TJSONObject;
       function Delete(AField: String; AValue: String): TJSONObject;
       function DAO: ISimpleDAO<T>;
       function DataSet: TDataSet;
@@ -101,20 +104,31 @@ end;
 
 function TGenericDAO<T>.Find: TJSONArray;
 begin
-  FDAO.Find;
-  Result := FDataSource.DataSet.AsJSONArray;
+  try
+    FDAO.Find;
+    Result := FDataSource.DataSet.AsJSONArray;
+  except on E: Exception do
+    raise EHorseException.New.Error(E.Message).Status(THTTPStatus.InternalServerError);
+  end;
 end;
 
 function TGenericDAO<T>.Find(const AId: Int64): TJSONObject;
 begin
-  FDAO.Find(AId);
-  Result := FDataSource.DataSet.AsJSONObject;
+  try
+    FDAO.Find(AId);
+    Result := FDataSource.DataSet.AsJSONObject;
+  except on E: Exception do
+    raise EHorseException.New.Error(E.Message).Status(THTTPStatus.InternalServerError);
+  end;
 end;
 
-function TGenericDAO<T>.Insert(const AEntity: T): TJSONObject;
+procedure TGenericDAO<T>.Insert(const AJSONObject: TJSONObject);
 begin
-  FDAO.Insert(AEntity);
-  Result := FDataSource.DataSet.AsJSONObject;
+  try
+    FDAO.Insert(TJson.JsonToObject<T>(AJSONObject));
+  except on E: Exception do
+    raise EHorseException.New.Error(E.Message).Status(THTTPStatus.InternalServerError);
+  end;
 end;
 
 class function TGenericDAO<T>.New: IGenericDAO<T>;
@@ -122,10 +136,14 @@ begin
   Result := Self.Create;
 end;
 
-function TGenericDAO<T>.Update(const AEntity: T): TJSONObject;
+function TGenericDAO<T>.Update(const AJSONObject: TJSONObject): TJSONObject;
 begin
-  FDAO.Update(AEntity);
-  Result := FDataSource.DataSet.AsJSONObject;
+  try
+    FDAO.Update(TJson.JsonToObject<T>(AJSONObject));
+    Result := FDataSource.DataSet.AsJSONObject;
+  except on E: Exception do
+    raise EHorseException.New.Error(E.Message).Status(THTTPStatus.InternalServerError);
+  end;
 end;
 
 end.

@@ -20,6 +20,9 @@ uses
 type
   [SwagPath('providers', 'Providers')]
   TControllerProvider = class(THorseGBSwagger)
+    private
+      procedure ValidateProvider(AJSONObject: TJSONObject);
+    
     public
       [SwagGET('', 'Lists all the providers')]
       [SwagResponse(200)]
@@ -49,22 +52,73 @@ end;
 procedure TControllerProvider.Post;
 var
   FDAO: IGenericDAO<TProviderEntity>;
-  LEntity: TProviderEntity;
 begin
+  ValidateProvider(FRequest.Body<TJSONObject>);
+
   FDAO := TGenericDAO<TProviderEntity>.New;
+  FDAO.Insert(FRequest.Body<TJSONObject>);
 
-  LEntity := TProviderEntity.Create;
-  try;
-    LEntity.Name := FRequest.Body<TJSONObject>.GetValue('name').ToString;
-    LEntity.Phone := FRequest.Body<TJSONObject>.GetValue('phone').ToString;
-    LEntity.Email := FRequest.Body<TJSONObject>.GetValue('email').ToString;
-    LEntity.Cpf := FRequest.Body<TJSONObject>.GetValue('cpf').ToString;
-    LEntity.Bio := FRequest.Body<TJSONObject>.GetValue('bio').ToString;
-    LEntity.ProfilePic := FRequest.Body<TJSONObject>.GetValue('profilePic').ToString;
+  FResponse.Status(THTTPStatus.Created);
+end;
 
-     FResponse.Send<TJSONObject>(FDAO.Insert(LEntity));
+procedure TControllerProvider.ValidateProvider(AJSONObject: TJSONObject);
+var
+  LName: String;
+  LPhone: String;
+  LEmail: String;
+  LCpf: String;
+  LBio: String;
+  LProfilePic: String;
+  LNullFieldsList: TStringList;
+begin
+  LNullFieldsList := TStringList.Create;
+  try
+    if not AJSONObject.TryGetValue<String>('name', LName) then
+    begin
+      LNullFieldsList.Add('name');
+    end;
+
+    if not AJSONObject.TryGetValue<String>('phone', LPhone) then
+    begin
+      LNullFieldsList.Add('phone');
+    end;
+
+    if not AJSONObject.TryGetValue<String>('email', LEmail) then
+    begin
+      LNullFieldsList.Add('email');
+    end;
+
+    if not AJSONObject.TryGetValue<String>('cpf', LCpf) then
+    begin
+      LNullFieldsList.Add('cpf');
+    end;
+
+    if not AJSONObject.TryGetValue<String>('bio', LBio) then
+    begin
+      LNullFieldsList.Add('bio');
+    end;
+
+    if not AJSONObject.TryGetValue<String>('profilePic', LProfilePic) then
+    begin
+      LNullFieldsList.Add('profilePic');
+    end;
+
+    if LNullFieldsList.Count > 0 then
+    begin
+      var LMsg := '';
+      if LNullFieldsList.Count = 1 then
+      begin
+        LMsg := 'campos obrigatórios: ' + LNullFieldsList.Text;
+      end
+      else if LNullFieldsList.Count > 1 then
+      begin
+        LMsg := 'campos obrigatórios: ' + LNullFieldsList.Text;
+      end;
+
+      raise EHorseException.New.Error(LMsg).Status(THTTPStatus.BadRequest);
+    end;
   finally
-    LEntity.DisposeOf;
+    LNullFieldsList.DisposeOf;
   end;
 end;
 

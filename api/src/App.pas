@@ -9,6 +9,7 @@ uses
   Horse.CORS,
   Horse.Jhonson,
   Horse.GBSwagger,
+  Horse.HandleException,
   SerPrestadores.Controller.Provider;
 
 type
@@ -57,6 +58,7 @@ begin
   Self.FApp.Use(Jhonson);
   Self.FApp.Use(CORS);
   Self.FApp.Use(HorseSwagger);
+  Self.FApp.Use(HandleException);
 end;
 
 procedure TApp.RegisterRoutes;
