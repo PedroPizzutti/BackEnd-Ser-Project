@@ -59,7 +59,7 @@ type
       [SwagResponse(500)]
       procedure Put;
 
-      [SwagDELETE('/:id', 'Update a provider')]
+      [SwagDELETE('/:id', 'Delete a provider')]
       [SwagParamPath('id', 'Provider id')]
       [SwagResponse(204)]
       [SwagResponse(400)]
