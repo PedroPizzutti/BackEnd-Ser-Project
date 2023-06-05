@@ -108,11 +108,6 @@ var
   LName : String;
 begin
   LName := FRequest.Query.Items['name'];
-  if LName.IsEmpty then
-  begin
-    raise EHorseException.New.Error('É necessário informar um nome').Status(THTTPStatus.BadRequest);
-  end;
-
   FDAO := TGenericDAO<TProviderEntity>.New;
   FResponse.Send<TJSONArray>(FDAO.FindByField('name', LName));
 end;

@@ -108,6 +108,10 @@ function TGenericDAO<T>.Find: TJSONArray;
 begin
   try
     FDAO.Find;
+    if FDataSource.DataSet.AsJSONArray = nil then
+    begin
+      Exit(TJSONArray.Create);
+    end;
     Result := FDataSource.DataSet.AsJSONArray;
   except on E: Exception do
     raise EHorseException.New.Error(E.Message).Status(THTTPStatus.InternalServerError);
@@ -121,7 +125,7 @@ begin
 
     if FDataSource.DataSet.RecordCount = 0 then
     begin
-      raise EHorseException.New.Error('Provider não existe na base de dados').Status(THTTPStatus.BadRequest);
+      raise EHorseException.New.Error('Registro não existe na base de dados').Status(THTTPStatus.BadRequest);
     end;
 
     Result := FDataSource.DataSet.AsJSONObject;
@@ -139,6 +143,10 @@ begin
       .&End
       .Find;
 
+    if FDataSource.DataSet.AsJSONArray = nil then
+    begin
+      Exit(TJSONArray.Create);
+    end;
     Result := FDataSource.DataSet.AsJSONArray;
   except on E: Exception do
     raise EHorseException.New.Error(E.Message).Status(THTTPStatus.InternalServerError);
