@@ -5,7 +5,6 @@ interface
 uses
   System.SysUtils,
   System.IOUtils,
-  Winapi.Windows,
   Data.DB,
   FireDAC.Stan.Intf,
   FireDAC.Stan.Option,
@@ -20,7 +19,6 @@ uses
   FireDAC.Phys.SQLiteDef,
   FireDAC.Stan.ExprFuncs,
   FireDAC.Phys.SQLiteWrapper.Stat,
-  FireDAC.VCLUI.Wait,
   FireDAC.Comp.UI,
   FireDAC.Comp.Client;
 
@@ -67,7 +65,11 @@ end;
 procedure TConnection.DataBaseConfig;
 begin
   FConnection.Params.DriverID := 'SQLite';
+  {$IFDEF MSWINDOWS}
   FConnection.Params.Database := TDirectory.GetCurrentDirectory + '\bd\ser-prestadores.db';
+  {$ELSE}
+  FConnection.Params.Database :='/opt/api/bd/ser-prestadores.db';
+  {$ENDIF}
   FConnection.Params.UserName := '';
   FConnection.Params.Password := '';
   FConnection.Params.Add('LockingMode=Normal');

@@ -4,7 +4,9 @@ interface
 
 uses
   System.SysUtils,
+  {$IFDEF MSWINDOWS}
   Winapi.Windows,
+  {$ENDIF}
   Horse,
   Horse.CORS,
   Horse.Jhonson,
@@ -47,10 +49,12 @@ begin
   Writeln('--- SerPrestadores-Api ---');
   Writeln(Format('Server on: %s', [FApp.Host]));
   Writeln(Format('Port: %d', [FApp.Port]));
+  {$IFDEF MSWINDOWS}
   Writeln('Press ENTER to stop the application...');
   Readln;
   THorse.StopListen;
   FreeConsole;
+  {$ENDIF}
 end;
 
 procedure TApp.RegisterMiddlewares;
