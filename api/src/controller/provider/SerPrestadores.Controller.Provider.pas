@@ -48,21 +48,21 @@ type
       procedure GetByName;
 
       [SwagPOST('', 'Create a provider')]
-      [SwagResponse(201, TProviderEntity)]
+      [SwagResponse(201, nil)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Post;
 
       [SwagPUT('/:id', 'Update a provider')]
       [SwagParamPath('id', 'Provider id')]
-      [SwagResponse(200, TProviderEntity)]
+      [SwagResponse(200, nil)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Put;
 
       [SwagDELETE('/:id', 'Delete a provider')]
       [SwagParamPath('id', 'Provider id')]
-      [SwagResponse(204)]
+      [SwagResponse(204, nil)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Delete;
