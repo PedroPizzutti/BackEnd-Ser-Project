@@ -15,7 +15,8 @@ uses
   Horse.Commons,
   Rest.Json,
   SerPrestadores.Model.Dao.GenericDAO,
-  SerPrestadores.Model.Provider.Entity;
+  SerPrestadores.Model.Provider.Entity,
+  SerPrestadores.Model.Error.Entity;
 
 type
   [SwagPath('providers', 'Providers')]
@@ -27,43 +28,43 @@ type
 
     public
       [SwagGET('', 'Lists all the providers')]
-      [SwagResponse(200)]
-      [SwagResponse(400)]
-      [SwagResponse(500)]
+      [SwagResponse(200, TProviderEntity, 'Lista de providers' ,True)]
+      [SwagResponse(400, TErrorEntity)]
+      [SwagResponse(500, TErrorEntity)]
       procedure Get;
 
       [SwagGET('/:id', 'List a provider in detail')]
       [SwagParamPath('id', 'Provider id')]
-      [SwagResponse(200)]
-      [SwagResponse(400)]
-      [SwagResponse(500)]
+      [SwagResponse(200, TProviderEntity, 'Provider em detalhe')]
+      [SwagResponse(400, TErrorEntity)]
+      [SwagResponse(500, TErrorEntity)]
       procedure GetById;
 
       [SwagGET('/search', 'Lists all the providers with liked name')]
       [SwagParamQuery('name', 'filter by name')]
-      [SwagResponse(200)]
-      [SwagResponse(400)]
-      [SwagResponse(500)]
+      [SwagResponse(200, TProviderEntity, 'Lista de providers com o nome digitado', True)]
+      [SwagResponse(400, TErrorEntity)]
+      [SwagResponse(500, TErrorEntity)]
       procedure GetByName;
 
       [SwagPOST('', 'Create a provider')]
       [SwagResponse(201)]
-      [SwagResponse(400)]
-      [SwagResponse(500)]
+      [SwagResponse(400, TErrorEntity)]
+      [SwagResponse(500, TErrorEntity)]
       procedure Post;
 
       [SwagPUT('/:id', 'Update a provider')]
       [SwagParamPath('id', 'Provider id')]
       [SwagResponse(200)]
-      [SwagResponse(400)]
-      [SwagResponse(500)]
+      [SwagResponse(400, TErrorEntity)]
+      [SwagResponse(500, TErrorEntity)]
       procedure Put;
 
       [SwagDELETE('/:id', 'Delete a provider')]
       [SwagParamPath('id', 'Provider id')]
       [SwagResponse(204)]
-      [SwagResponse(400)]
-      [SwagResponse(500)]
+      [SwagResponse(400, TErrorEntity)]
+      [SwagResponse(500, TErrorEntity)]
       procedure Delete;
   end;
 

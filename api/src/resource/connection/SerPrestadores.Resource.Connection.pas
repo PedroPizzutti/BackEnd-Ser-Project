@@ -5,6 +5,9 @@ interface
 uses
   System.SysUtils,
   System.IOUtils,
+  {$IFDEF MSWINDOWS}
+  Winapi.Windows,
+  {$ENDIF}
   Data.DB,
   FireDAC.Stan.Intf,
   FireDAC.Stan.Option,

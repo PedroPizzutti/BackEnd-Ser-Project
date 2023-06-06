@@ -3,11 +3,13 @@ unit SerPrestadores.Model.Provider.Entity;
 interface
 
 uses
-  System.Classes,
   Data.DB,
+  GBSwagger.Model.Attributes,
+  System.Classes,
   SimpleAttributes;
 
 type
+  [SwagClass('Providers')]
   [Tabela('PROVIDERS')]
   TProviderEntity = class
     private
@@ -26,24 +28,38 @@ type
       procedure SetPhone(const Value: String);
       procedure SetProfilePic(const Value: String);
     public
+      [SwagNumber]
+      [SwagProp('id', 'id')]
       [Campo('id'), Pk, AutoInc]
       property Id: Int64 read FId write SetId;
 
+      [SwagString]
+      [SwagProp('name', 'nome')]
       [Campo('name')]
       property Name: String read FName write SetName;
 
+      [SwagString]
+      [SwagProp('phone', 'telefone')]
       [Campo('phone')]
       property Phone: String read FPhone write SetPhone;
 
+      [SwagString]
+      [SwagProp('email', 'e-mail')]
       [Campo('email')]
       property Email: String read FEmail write SetEmail;
 
+      [SwagString]
+      [SwagProp('cpf', 'cpf')]
       [Campo('cpf')]
       property Cpf: String read FCpf write SetCpf;
 
+      [SwagString]
+      [SwagProp('bio', 'Pequena biografia')]
       [Campo('bio')]
       property Bio: String read FBio write SetBio;
 
+      [SwagString]
+      [SwagProp('profilePic', 'Foto de perfil')]
       [Campo('profile_pic')]
       property ProfilePic: String read FProfilePic write SetProfilePic;
   end;

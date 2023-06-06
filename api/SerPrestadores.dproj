@@ -100,6 +100,7 @@
         <DCCReference Include="src\model\genericDao\SerPrestadores.Model.Dao.GenericDAO.pas"/>
         <DCCReference Include="src\model\provider\entity\SerPrestadores.Model.Provider.Entity.pas"/>
         <DCCReference Include="src\controller\provider\SerPrestadores.Controller.Provider.pas"/>
+        <DCCReference Include="src\model\error\entity\SerPrestadores.Model.Error.Entity.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
