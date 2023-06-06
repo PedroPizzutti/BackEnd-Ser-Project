@@ -9,6 +9,7 @@ uses
   Winapi.Windows,
   {$ENDIF}
   Data.DB,
+  Horse,
   FireDAC.Stan.Intf,
   FireDAC.Stan.Option,
   FireDAC.Stan.Error,
@@ -55,7 +56,7 @@ begin
     FConnection.Connected;
     Result := FConnection;
   except on E: Exception do
-    raise Exception.Create('Connection with database fail: ' + E.Message);
+    raise EHorseException.New.Error('Connection with database fail: ' + E.Message).Status(THTTPStatus.InternalServerError);
   end;  
 end;
 
