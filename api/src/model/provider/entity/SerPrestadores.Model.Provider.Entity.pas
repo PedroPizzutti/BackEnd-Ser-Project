@@ -28,6 +28,7 @@ type
       procedure SetPhone(const Value: String);
       procedure SetProfilePic(const Value: String);
     public
+      [SwagIgnore]
       [SwagNumber]
       [SwagProp('id', 'id')]
       [Campo('id'), Pk, AutoInc]
