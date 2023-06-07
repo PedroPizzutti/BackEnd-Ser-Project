@@ -19,7 +19,7 @@ uses
   SerPrestadores.Model.Error.Entity;
 
 type
-  [SwagPath('providers', 'Providers')]
+  [SwagPath('providers', 'Prestadores')]
   TControllerProvider = class(THorseGBSwagger)
     private
       var FDAO: IGenericDAO<TProviderEntity>;
