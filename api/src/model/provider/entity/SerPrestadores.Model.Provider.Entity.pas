@@ -10,7 +10,7 @@ uses
 
 type
   [SwagClass('Providers')]
-  [Tabela('PROVIDERS')]
+  [Tabela('providers')]
   TProviderEntity = class
     private
       var FName: String;
@@ -36,32 +36,36 @@ type
 
       [SwagString]
       [SwagProp('name', 'nome')]
-      [Campo('name')]
+      [SwagRequired]
+      [Campo('name'), NotNull]
       property Name: String read FName write SetName;
 
       [SwagString]
       [SwagProp('phone', 'telefone')]
-      [Campo('phone')]
+      [SwagRequired]
+      [Campo('phone'), NotNull]
       property Phone: String read FPhone write SetPhone;
 
       [SwagString]
       [SwagProp('email', 'e-mail')]
-      [Campo('email')]
+      [SwagRequired]
+      [Campo('email'), NotNull]
       property Email: String read FEmail write SetEmail;
 
       [SwagString]
       [SwagProp('cpf', 'cpf')]
-      [Campo('cpf')]
+      [SwagRequired]
+      [Campo('cpf'), NotNull]
       property Cpf: String read FCpf write SetCpf;
 
       [SwagString]
       [SwagProp('bio', 'Pequena biografia')]
-      [Campo('bio')]
+      [Campo('bio'), NotNull]
       property Bio: String read FBio write SetBio;
 
       [SwagString]
       [SwagProp('profilePic', 'Foto de perfil')]
-      [Campo('profile_pic')]
+      [Campo('profilePic')]
       property ProfilePic: String read FProfilePic write SetProfilePic;
   end;
 
