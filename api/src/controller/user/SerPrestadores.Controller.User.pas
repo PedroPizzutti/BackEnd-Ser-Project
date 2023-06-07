@@ -8,7 +8,6 @@ uses
   System.StrUtils,
   System.SysUtils,
   System.Types,
-  BCrypt,
   GBSwagger.Path.Attributes,
   Horse,
   Horse.GBSwagger,
@@ -23,7 +22,7 @@ type
   [SwagPath('users', 'Usuários')]
   TControllerProvider = class(THorseGBSwagger)
     private
-      var FDAO: IGenericDAO<TProviderEntity>;
+      var FDAO: IGenericDAO<TUserEntity>;
     public
       [SwagPOST('', 'Create a user')]
       [SwagResponse(201, nil)]
