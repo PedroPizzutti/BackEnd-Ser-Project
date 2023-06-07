@@ -11,6 +11,7 @@
 		"github.com/hashload/jhonson": "^1.1.6",
 		"https://github.com/academiadocodigo/simpleorm": "^2.02.10",
 		"https://github.com/ezequieljuliano/datasetconverter4delphi": ">0.0.0",
-		"https://github.com/gabrielbaltazar/gbswagger": "^3.0.7"
+		"https://github.com/gabrielbaltazar/gbswagger": "^3.0.7",
+		"https://github.com/viniciussanchez/bcrypt": "^1.0.8"
 	}
 }
