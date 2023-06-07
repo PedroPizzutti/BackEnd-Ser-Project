@@ -11,7 +11,8 @@ uses
   SerPrestadores.Model.Dao.GenericDAO in 'src\model\genericDao\SerPrestadores.Model.Dao.GenericDAO.pas',
   SerPrestadores.Model.Provider.Entity in 'src\model\provider\entity\SerPrestadores.Model.Provider.Entity.pas',
   SerPrestadores.Controller.Provider in 'src\controller\provider\SerPrestadores.Controller.Provider.pas',
-  SerPrestadores.Model.Error.Entity in 'src\model\error\entity\SerPrestadores.Model.Error.Entity.pas';
+  SerPrestadores.Model.Error.Entity in 'src\model\error\entity\SerPrestadores.Model.Error.Entity.pas',
+  SerPrestadores.Model.User.Entity in 'src\model\user\entity\SerPrestadores.Model.User.Entity.pas';
 
 var
   App: TApp;
