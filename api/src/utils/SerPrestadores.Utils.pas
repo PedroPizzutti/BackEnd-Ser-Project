@@ -61,11 +61,11 @@ begin
       var LMsg := '';
       if LNullFields.Count = 1 then
       begin
-        LMsg := 'Campo obrigatório: ' + LNullFields.Text;
+        LMsg := 'Required field: ' + LNullFields.Text;
       end
       else
       begin
-        LMsg := 'Campos obrigatórios: ' + LNullFields.Text;
+        LMsg := 'Required fields: ' + LNullFields.Text;
       end;
 
       raise EHorseException.New.Error(LMsg).Status(THTTPStatus.BadRequest);
@@ -79,7 +79,7 @@ class procedure TUtils.ValidateId(const AId: Int64);
 begin
   if Aid <= 0 then
   begin
-    raise EHorseException.New.Error('É necessário informar um id').Status(THTTPStatus.BadRequest);
+    raise EHorseException.New.Error('It is necessary to informe an id').Status(THTTPStatus.BadRequest);
   end;
 end;
 
