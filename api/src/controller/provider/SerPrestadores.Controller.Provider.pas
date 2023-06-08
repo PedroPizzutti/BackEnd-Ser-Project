@@ -157,8 +157,6 @@ var
   LPhone: String;
   LEmail: String;
   LCpf: String;
-  LBio: String;
-  LProfilePic: String;
   LNullFieldsList: TStringList;
 begin
   LNullFieldsList := TStringList.Create;
