@@ -13,7 +13,8 @@ uses
   SerPrestadores.Controller.Provider in 'src\controller\provider\SerPrestadores.Controller.Provider.pas',
   SerPrestadores.Model.Error.Entity in 'src\model\error\entity\SerPrestadores.Model.Error.Entity.pas',
   SerPrestadores.Model.User.Entity in 'src\model\user\entity\SerPrestadores.Model.User.Entity.pas',
-  SerPrestadores.Controller.User in 'src\controller\user\SerPrestadores.Controller.User.pas';
+  SerPrestadores.Controller.User in 'src\controller\user\SerPrestadores.Controller.User.pas',
+  SerPrestadores.Utils in 'src\utils\SerPrestadores.Utils.pas';
 
 var
   App: TApp;
