@@ -110,7 +110,7 @@ var
 begin
   LName := FRequest.Query.Items['name'];
   FDAO := TGenericDAO<TProviderEntity>.New;
-  FResponse.Send<TJSONArray>(FDAO.FindByField('name', LName));
+  FResponse.Send<TJSONArray>(FDAO.FindByFieldLiked('name', LName));
 end;
 
 procedure TControllerProvider.Post;

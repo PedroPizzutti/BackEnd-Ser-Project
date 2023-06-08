@@ -33,12 +33,6 @@ type
       [SwagResponse(500, TErrorEntity)]
       procedure GetById;
 
-      [SwagPOST('', 'create a user')]
-      [SwagResponse(201, nil)]
-      [SwagResponse(400, TErrorEntity)]
-      [SwagResponse(500, TErrorEntity)]
-      procedure Post;
-
       [SwagPut('/:id', 'update a user')]
       [SwagParamPath('id', 'user id')]
       [SwagResponse(200, nil)]
@@ -84,22 +78,6 @@ begin
   FDAO := TGenericDAO<TUserEntity>.New;
 
   FResponse.Send<TJSONObject>(FDAO.Find(LIdUser));
-end;
-
-procedure TControllerUser.Post;
-var
-  LRequest: TJSONObject;
-begin
-  LRequest := FRequest.Body<TJSONObject>;
-
-  Self.ValidateUser(LRequest);
-
-  TUtils.EncryptPasswordJSON(LRequest, 'password');
-
-  FDAO := TGenericDAO<TUserEntity>.New;
-  FDAO.Insert(LRequest);
-
-  FResponse.Status(THTTPStatus.Created);
 end;
 
 procedure TControllerUser.Put;

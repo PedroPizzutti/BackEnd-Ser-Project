@@ -13,6 +13,7 @@ uses
   Horse.GBSwagger,
   Horse.HandleException,
   SerPrestadores.Controller.User,
+  SerPrestadores.Controller.Auth,
   SerPrestadores.Controller.Provider;
 
 type
@@ -69,6 +70,7 @@ end;
 procedure TApp.RegisterRoutes;
 begin
   THorseGBSwaggerRegister.RegisterPath(TControllerUser);
+  THorseGBSwaggerRegister.RegisterPath(TControllerAuth);
   THorseGBSwaggerRegister.RegisterPath(TControllerProvider);
 end;
 

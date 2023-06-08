@@ -25,7 +25,8 @@ type
 
     function Find: TJSONArray; overload;
     function Find(const AId: Int64): TJSONObject; overload;
-    function FindByField(const AField: String; const AValue: String): TJSONArray;
+    function FindByFieldLiked(const AField: String; const AValue: String): TJSONArray;
+    function FindByFieldExactly(const AField: String; const AValue: String): TJSONArray;
     function Update(const AJSONObject: TJSONObject): TJSONObject;
     function Delete(AField: String; AValue: String): TJSONObject;
     function DAO: ISimpleDAO<T>;
@@ -49,7 +50,8 @@ type
 
       function Find: TJSONArray; overload;
       function Find(const AId: Int64): TJSONObject; overload;
-      function FindByField(const AField: String; const AValue: String): TJSONArray;
+      function FindByFieldLiked(const AField: String; const AValue: String): TJSONArray;
+      function FindByFieldExactly(const AField: String; const AValue: String): TJSONArray;
       function Update(const AJSONObject: TJSONObject): TJSONObject;
       function Delete(AField: String; AValue: String): TJSONObject;
       function DAO: ISimpleDAO<T>;
@@ -125,7 +127,7 @@ begin
 
     if FDataSource.DataSet.RecordCount = 0 then
     begin
-      raise EHorseException.New.Error('Registro não existe na base de dados').Status(THTTPStatus.BadRequest);
+      raise EHorseException.New.Error('data not found').Status(THTTPStatus.BadRequest);
     end;
 
     Result := FDataSource.DataSet.AsJSONObject;
@@ -134,7 +136,28 @@ begin
   end;
 end;
 
-function TGenericDAO<T>.FindByField(const AField, AValue: String): TJSONArray;
+function TGenericDAO<T>.FindByFieldExactly(const AField,
+  AValue: String): TJSONArray;
+begin
+  try
+    FDAO
+      .SQL
+      .Where(AField + ' = ' + QuotedStr(AValue))
+      .&End
+      .Find;
+
+    if FDataSource.DataSet.AsJSONArray = nil then
+    begin
+      Exit(TJSONArray.Create);
+    end;
+    Result := FDataSource.DataSet.AsJSONArray;
+  except on E: Exception do
+    raise EHorseException.New.Error(E.Message).Status(THTTPStatus.InternalServerError);
+  end;
+end;
+
+function TGenericDAO<T>.FindByFieldLiked(const AField,
+  AValue: String): TJSONArray;
 begin
   try
     FDAO
