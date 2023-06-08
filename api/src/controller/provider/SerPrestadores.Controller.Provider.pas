@@ -188,7 +188,7 @@ begin
       begin
         LMsg := 'campos obrigatórios: ' + LNullFieldsList.Text;
       end
-      else if LNullFieldsList.Count > 1 then
+      else
       begin
         LMsg := 'campos obrigatórios: ' + LNullFieldsList.Text;
       end;
