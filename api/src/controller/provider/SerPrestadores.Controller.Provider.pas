@@ -14,54 +14,54 @@ uses
   Horse.Jhonson,
   Horse.Commons,
   Rest.Json,
+  SerPrestadores.Utils,
   SerPrestadores.Model.Dao.GenericDAO,
   SerPrestadores.Model.Provider.Entity,
   SerPrestadores.Model.Error.Entity;
 
 type
-  [SwagPath('providers', 'Prestadores')]
+  [SwagPath('providers', 'providers')]
   TControllerProvider = class(THorseGBSwagger)
     private
       var FDAO: IGenericDAO<TProviderEntity>;
       procedure ValidateProvider(AJSONObject: TJSONObject);
-      procedure ValidateId(AId: Int64);
 
     public
-      [SwagGET('', 'Lists all the providers')]
-      [SwagResponse(200, TProviderEntity, 'Lista de providers' ,True)]
+      [SwagGET('', 'lists all the providers')]
+      [SwagResponse(200, TProviderEntity, 'provider list' ,True)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Get;
 
-      [SwagGET('/:id', 'List a provider in detail')]
-      [SwagParamPath('id', 'Provider id')]
-      [SwagResponse(200, TProviderEntity, 'Provider em detalhe')]
+      [SwagGET('/:id', 'list a provider in detail')]
+      [SwagParamPath('id', 'provider id')]
+      [SwagResponse(200, TProviderEntity, 'provider in detail')]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure GetById;
 
-      [SwagGET('/search', 'Lists all the providers with liked name')]
+      [SwagGET('/search', 'lists all the providers with liked name')]
       [SwagParamQuery('name', 'filter by name')]
-      [SwagResponse(200, TProviderEntity, 'Lista de providers com o nome digitado', True)]
+      [SwagResponse(200, TProviderEntity, 'filtered provider list')]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure GetByName;
 
-      [SwagPOST('', 'Create a provider')]
+      [SwagPOST('', 'create a provider')]
       [SwagResponse(201, nil)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Post;
 
-      [SwagPUT('/:id', 'Update a provider')]
-      [SwagParamPath('id', 'Provider id')]
+      [SwagPUT('/:id', 'update a provider')]
+      [SwagParamPath('id', 'provider id')]
       [SwagResponse(200, nil)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Put;
 
-      [SwagDELETE('/:id', 'Delete a provider')]
-      [SwagParamPath('id', 'Provider id')]
+      [SwagDELETE('/:id', 'delete a provider')]
+      [SwagParamPath('id', 'provider id')]
       [SwagResponse(204, nil)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
@@ -77,7 +77,7 @@ var
   LIdProvider: Int64;
 begin
   LIdProvider := FRequest.Params.Items['id'].ToInteger;
-  Self.ValidateId(LIdProvider);
+  TUtils.ValidateId(LIdProvider);
 
   FDAO := TGenericDAO<TProviderEntity>.New;
   FDAO.Find(LIdProvider);
@@ -98,7 +98,7 @@ var
   LIdProvider: Int64;
 begin
   LIdProvider := FRequest.Params.Items['id'].ToInteger;
-  Self.ValidateId(LIdProvider);
+  TUtils.ValidateId(LIdProvider);
 
   FDAO := TGenericDAO<TProviderEntity>.New;
   FResponse.Send<TJSONObject>(FDAO.Find(LIdProvider));
@@ -129,8 +129,7 @@ var
   LRequest: TJSONObject;
 begin
   LIdProvider := FRequest.Params.Items['id'].ToInteger;
-
-  Self.ValidateId(LIdProvider);
+  TUtils.ValidateId(LIdProvider);
 
   FDAO := TGenericDAO<TProviderEntity>.New;
   FDAO.Find(LIdProvider);
@@ -143,60 +142,20 @@ begin
   FDAO.Update(LRequest);
 end;
 
-procedure TControllerProvider.ValidateId(AId: Int64);
-begin
-  if AId <= 0 then
-  begin
-    raise EHorseException.New.Error('É necessário informar um id').Status(THTTPStatus.BadRequest);
-  end;
-end;
-
 procedure TControllerProvider.ValidateProvider(AJSONObject: TJSONObject);
 var
-  LName: String;
-  LPhone: String;
-  LEmail: String;
-  LCpf: String;
-  LNullFieldsList: TStringList;
+  LFieldsToValidate: TStringList;
 begin
-  LNullFieldsList := TStringList.Create;
+  LFieldsToValidate := TStringList.Create;
   try
-    if not AJSONObject.TryGetValue<String>('name', LName) then
-    begin
-      LNullFieldsList.Add('name');
-    end;
+    LFieldsToValidate.Add('name');
+    LFieldsToValidate.Add('phone');
+    LFieldsToValidate.Add('email');
+    LFieldsToValidate.Add('cpf');
 
-    if not AJSONObject.TryGetValue<String>('phone', LPhone) then
-    begin
-      LNullFieldsList.Add('phone');
-    end;
-
-    if not AJSONObject.TryGetValue<String>('email', LEmail) then
-    begin
-      LNullFieldsList.Add('email');
-    end;
-
-    if not AJSONObject.TryGetValue<String>('cpf', LCpf) then
-    begin
-      LNullFieldsList.Add('cpf');
-    end;
-
-    if LNullFieldsList.Count > 0 then
-    begin
-      var LMsg := '';
-      if LNullFieldsList.Count = 1 then
-      begin
-        LMsg := 'campos obrigatórios: ' + LNullFieldsList.Text;
-      end
-      else
-      begin
-        LMsg := 'campos obrigatórios: ' + LNullFieldsList.Text;
-      end;
-
-      raise EHorseException.New.Error(LMsg).Status(THTTPStatus.BadRequest);
-    end;
+    TUtils.ValidateFieldsString(AJSONObject, LFieldsToValidate);
   finally
-    LNullFieldsList.DisposeOf;
+    LFieldsToValidate.DisposeOf;
   end;
 end;
 
