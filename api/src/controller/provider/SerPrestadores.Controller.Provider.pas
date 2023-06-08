@@ -33,7 +33,7 @@ type
       [SwagResponse(500, TErrorEntity)]
       procedure Get;
 
-      [SwagGET('/:id', 'list a provider in detail')]
+      [SwagGET('/:id', 'lists a provider in detail')]
       [SwagParamPath('id', 'provider id')]
       [SwagResponse(200, TProviderEntity, 'provider in detail')]
       [SwagResponse(400, TErrorEntity)]

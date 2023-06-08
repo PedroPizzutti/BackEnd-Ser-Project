@@ -14,7 +14,8 @@ uses
   SerPrestadores.Model.Error.Entity in 'src\model\error\entity\SerPrestadores.Model.Error.Entity.pas',
   SerPrestadores.Model.User.Entity in 'src\model\user\entity\SerPrestadores.Model.User.Entity.pas',
   SerPrestadores.Controller.User in 'src\controller\user\SerPrestadores.Controller.User.pas',
-  SerPrestadores.Utils in 'src\utils\SerPrestadores.Utils.pas';
+  SerPrestadores.Utils in 'src\utils\SerPrestadores.Utils.pas',
+  SerPrestadores.Controller.Auth in 'src\controller\auth\SerPrestadores.Controller.Auth.pas';
 
 var
   App: TApp;

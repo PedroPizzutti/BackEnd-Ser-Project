@@ -15,93 +15,128 @@ uses
   Horse.Commons,
   Rest.Json,
   GBSwagger.Path.Attributes,
+  SerPrestadores.Utils,
   SerPrestadores.Model.Dao.GenericDAO,
   SerPrestadores.Model.User.Entity,
   SerPrestadores.Model.Error.Entity;
 
 type
-  [SwagPath('users', 'Usuários')]
+  [SwagPath('users', 'user')]
   TControllerUser = class(THorseGBSwagger)
     private
       var FDAO: IGenericDAO<TUserEntity>;
       procedure ValidateUser(AJSONObject: TJSONObject);
-
     public
-      [SwagPOST('', 'Create a user')]
+      [SwagGET('/:id', 'lists a user in detail')]
+      [SwagResponse(200, TUserEntity)]
+      [SwagResponse(400, TErrorEntity)]
+      [SwagResponse(500, TErrorEntity)]
+      procedure GetById;
+
+      [SwagPOST('', 'create a user')]
       [SwagResponse(201, nil)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Post;
+
+      [SwagPut('/:id', 'update a user')]
+      [SwagParamPath('id', 'user id')]
+      [SwagResponse(200, nil)]
+      [SwagResponse(400, TErrorEntity)]
+      [SwagResponse(500, TErrorEntity)]
+      procedure Put;
+
+      [SwagDELETE('/:id', 'delete a user')]
+      [SwagResponse(204, nil)]
+      [SwagResponse(400, TErrorEntity)]
+      [SwagResponse(500, TErrorEntity)]
+      procedure Delete;
   end;
 
 implementation
 
 { TControllerUser }
 
-procedure TControllerUser.Post;
+procedure TControllerUser.Delete;
 var
-  LPassword: String;
-  LEncryptedPassword: String;
-  LJSONRequest: TJSONObject;
+  LIdUser: Int64;
 begin
-  LJSONRequest := FRequest.Body<TJSONObject>;
+  LIdUser := FRequest.Params.Items['id'].ToInteger;
 
-  Self.ValidateUser(LJSONRequest);
-
-  LPassword := LJSONRequest.GetValue<String>;
-  LEncryptedPassword := TBCrypt.GenerateHash(LPassword);
-  LJSONRequest.Get('password').JsonValue := TJSONString.Create(LEncryptedPassword);
+  TUtils.ValidateId(LIdUser);
 
   FDAO := TGenericDAO<TUserEntity>.New;
-  FDAO.Insert(LJSONRequest);
+  FDAO.Find(LIdUser);
+
+  FDAO.Delete('id', LIdUser.ToString);
+
+  FResponse.Status(THTTPStatus.NoContent);
+end;
+
+procedure TControllerUser.GetById;
+var
+  LIdUser: Int64;
+begin
+  LIdUser := FRequest.Params.Items['id'].ToInteger;
+
+  TUtils.ValidateId(LIdUser);
+
+  FDAO := TGenericDAO<TUserEntity>.New;
+
+  FResponse.Send<TJSONObject>(FDAO.Find(LIdUser));
+end;
+
+procedure TControllerUser.Post;
+var
+  LRequest: TJSONObject;
+begin
+  LRequest := FRequest.Body<TJSONObject>;
+
+  Self.ValidateUser(LRequest);
+
+  TUtils.EncryptPasswordJSON(LRequest, 'password');
+
+  FDAO := TGenericDAO<TUserEntity>.New;
+  FDAO.Insert(LRequest);
 
   FResponse.Status(THTTPStatus.Created);
 end;
 
+procedure TControllerUser.Put;
+var
+  LIdUser: Int64;
+  LRequest: TJSONObject;
+begin
+  LIdUser := FRequest.Params.Items['id'].ToInteger;
+  TUtils.ValidateId(LIdUser);
+
+  FDAO := TGenericDAO<TUserEntity>.New;
+  FDAO.Find(LIdUser);
+
+  LRequest := FRequest.Body<TJSONObject>;
+  LRequest.AddPair('id', LIdUser);
+
+  Self.ValidateUser(LRequest);
+
+  TUtils.EncryptPasswordJSON(LRequest, 'password');
+
+  FDAO.Update(LRequest);
+end;
+
 procedure TControllerUser.ValidateUser(AJSONObject: TJSONObject);
 var
-  LName: String;
-  LEmail: String;
-  LPassword: String;
-  LNullFieldsList: TStringList;
+  LFieldsToValidate: TStringList;
 begin
-  LNullFieldsList := TStringList.Create;
+  LFieldsToValidate := TStringList.Create;
   try
-    if not AJSONObject.TryGetValue<String>('name', LName) then
-    begin
-      LNullFieldsList.Add('name');
-    end;
+    LFieldsToValidate.Add('name');
+    LFieldsToValidate.Add('email');
+    LFieldsToValidate.Add('password');
 
-    if not AJSONObject.TryGetValue<String>('email', LEmail) then
-    begin
-      LNullFieldsList.Add('email');
-    end;
-
-    if not AJSONObject.TryGetValue<String>('password', LPassword) then
-    begin
-      LNullFieldsList.Add('password');
-    end;
-
-    if LNullFieldsList.Count > 0 then
-    begin
-      var LMsg := '';
-      if LNullFieldsList.Count = 1 then
-      begin
-        LMsg := 'campo obrigatório: ' + LNullFieldsList.Text;
-      end
-      else
-      begin
-        LMsg := 'campos obrigatórios: ' + LNullFieldsList.Text;
-      end;
-
-      raise EHorseException.New.Error(LMsg).Status(THTTPStatus.BadRequest);
-    end;
-
+    TUtils.ValidateFieldsString(AJSONObject, LFieldsToValidate);
   finally
-    LNullFieldsList.DisposeOf;
+    LFieldsToValidate.DisposeOf;
   end;
-
-
 end;
 
 end.
