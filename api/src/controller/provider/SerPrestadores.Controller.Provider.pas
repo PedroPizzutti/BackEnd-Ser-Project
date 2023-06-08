@@ -183,16 +183,6 @@ begin
       LNullFieldsList.Add('cpf');
     end;
 
-    if not AJSONObject.TryGetValue<String>('bio', LBio) then
-    begin
-      LNullFieldsList.Add('bio');
-    end;
-
-    if not AJSONObject.TryGetValue<String>('profilePic', LProfilePic) then
-    begin
-      LNullFieldsList.Add('profilePic');
-    end;
-
     if LNullFieldsList.Count > 0 then
     begin
       var LMsg := '';
