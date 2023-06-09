@@ -8,6 +8,7 @@ uses
   Winapi.Windows,
   {$ENDIF}
   Horse,
+  Horse.JWT,
   Horse.CORS,
   Horse.Jhonson,
   Horse.GBSwagger,
@@ -65,6 +66,7 @@ begin
   Self.FApp.Use(CORS);
   Self.FApp.Use(HorseSwagger);
   Self.FApp.Use(HandleException);
+  Self.FApp.Use(HorseJWT('SER', THorseJWTConfig.New.SkipRoutes(['/signup', 'signin'])));
 end;
 
 procedure TApp.RegisterRoutes;

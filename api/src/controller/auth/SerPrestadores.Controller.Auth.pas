@@ -37,7 +37,7 @@ type
       [SwagResponse(500, TErrorEntity)]
       procedure Post;
 
-      [SwagPOST('signin', 'create a user')]
+      [SwagPOST('signin', 'auth a user')]
       [SwagResponse(201, nil)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
