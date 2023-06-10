@@ -21,6 +21,9 @@ type
   TApp = class
   private
     var FApp: THorse;
+
+    function HorseJWTConfig: IHorseJWTConfig;
+
     procedure RegisterMiddlewares;
     procedure RegisterRoutes;
     procedure PrintInfo;
@@ -47,6 +50,18 @@ begin
   inherited;
 end;
 
+function TApp.HorseJWTConfig: IHorseJWTConfig;
+var
+  LHorseJWTConfig: IHorseJWTConfig;
+begin
+  LHorseJWTConfig :=
+    THorseJWTConfig
+      .New
+      .SkipRoutes(['/signin', '/signup', '/swagger/doc/html', '/swagger/doc/json']);
+
+  Result := LHorseJWTConfig;
+end;
+
 procedure TApp.PrintInfo;
 begin
   Writeln('--- SerPrestadores-Api ---');
@@ -66,7 +81,7 @@ begin
   Self.FApp.Use(CORS);
   Self.FApp.Use(HorseSwagger);
   Self.FApp.Use(HandleException);
-  Self.FApp.Use(HorseJWT('SER', THorseJWTConfig.New.SkipRoutes(['/signup', 'signin'])));
+  Self.FApp.Use(HorseJWT('SER', Self.HorseJWTConfig));
 end;
 
 procedure TApp.RegisterRoutes;
