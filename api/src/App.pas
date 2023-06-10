@@ -57,7 +57,7 @@ begin
   LHorseJWTConfig :=
     THorseJWTConfig
       .New
-      .SkipRoutes(['/signin', '/signup', '/swagger/doc/html', '/swagger/doc/json']);
+      .SkipRoutes(['/auth/signin', '/auth/signup', '/swagger/doc/html', '/swagger/doc/json']);
 
   Result := LHorseJWTConfig;
 end;
