@@ -11,6 +11,9 @@ uses
   BCrypt,
   Horse,
   Horse.JWT,
+  JOSE.Types.Bytes,
+  JOSE.Core.JWT,
+  JOSE.Core.Builder,
   Horse.GBSwagger,
   Horse.Jhonson,
   Horse.Commons,
@@ -22,7 +25,7 @@ uses
   SerPrestadores.Model.Error.Entity;
 
 type
-  [SwagPath('', 'authentication')]
+  [SwagPath('auth', 'authentication')]
   TControllerAuth = class(THorseGBSwagger)
     private
       var FDAO: IGenericDAO<TUserEntity>;
@@ -30,23 +33,44 @@ type
       procedure ValidateFieldsCreateUser(AJSONObject: TJSONObject);
       procedure ValidateFieldsLoginUser(AJSONObject: TJSONObject);
     public
-      [SwagPOST('signup', 'create a user')]
+      [SwagPOST('signup', 'create an user')]
       [SwagResponse(201, nil)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Post;
 
-      [SwagPOST('signin', 'auth a user')]
+      [SwagPOST('signin', 'generate a token')]
       [SwagResponse(201, nil)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure PostToken;
 
+      [SwagGET('user', 'return the authenticated user')]
+      [SwagResponse(200, TUserEntity)]
+      [SwagResponse(400, TErrorEntity)]
+      [SwagResponse(500, TErrorEntity)]
+      procedure GetLoggedUser;
   end;
 
 implementation
 
 { TControllerAuth }
+
+procedure TControllerAuth.GetLoggedUser;
+var
+  LIdUser: Int64;
+  LToken: String;
+  LAuthorization: String;
+begin
+  LAuthorization := FRequest.Headers.Items['Authorization'];
+  LToken := LAuthorization.Split([' '])[1];
+
+  LIdUser := TUtils.GetUserIdByToken(LToken);
+
+  FDAO := TGenericDAO<TUserEntity>.New;
+
+  FResponse.Send<TJSONObject>(FDAO.FindById(LIdUser));
+end;
 
 procedure TControllerAuth.Post;
 var
