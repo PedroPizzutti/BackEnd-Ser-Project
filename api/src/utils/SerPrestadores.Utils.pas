@@ -18,6 +18,7 @@ type
   TUtils = class
   public
     class function GenerateToken(AIdUser: String): String;
+    class function GetUserIdByToken(AToken: String): Int64;
     class procedure EncryptPasswordJSON(var AJSONObject: TJSONObject; const APasswordField: String);
     class procedure ValidateId(const AId: Int64);
     class procedure ValidateFieldsString(const AJSONObject: TJSONObject; const AFieldList: TStringList);
@@ -59,6 +60,14 @@ begin
   finally
     LJWT.DisposeOf;
   end;
+end;
+
+class function TUtils.GetUserIdByToken(AToken: String): Int64;
+var
+  LJWT: TJWT;
+begin
+  LJWT := TJOSE.DeserializeOnly(AToken);
+  Result := LJWT.Claims.Subject.ToInteger;
 end;
 
 class procedure TUtils.ValidateFieldsString(const AJSONObject: TJSONObject;
