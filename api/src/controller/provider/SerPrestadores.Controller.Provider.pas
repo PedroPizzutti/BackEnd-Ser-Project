@@ -80,7 +80,7 @@ begin
   TUtils.ValidateId(LIdProvider);
 
   FDAO := TGenericDAO<TProviderEntity>.New;
-  FDAO.Find(LIdProvider);
+  FDAO.FindById(LIdProvider);
 
   FDAO.Delete('id', LIdProvider.ToString);
 
@@ -101,7 +101,7 @@ begin
   TUtils.ValidateId(LIdProvider);
 
   FDAO := TGenericDAO<TProviderEntity>.New;
-  FResponse.Send<TJSONObject>(FDAO.Find(LIdProvider));
+  FResponse.Send<TJSONObject>(FDAO.FindById(LIdProvider));
 end;
 
 procedure TControllerProvider.GetByName;
@@ -132,7 +132,7 @@ begin
   TUtils.ValidateId(LIdProvider);
 
   FDAO := TGenericDAO<TProviderEntity>.New;
-  FDAO.Find(LIdProvider);
+  FDAO.FindById(LIdProvider);
 
   LRequest := FRequest.Body<TJSONObject>;
   LRequest.AddPair('id', LIdProvider);

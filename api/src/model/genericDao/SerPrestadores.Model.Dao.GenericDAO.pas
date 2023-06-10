@@ -23,8 +23,8 @@ type
     ['{208A66C3-802F-4EEA-9950-D30411E42797}']
     procedure Insert(const AJSONObject: TJSONObject);
 
-    function Find: TJSONArray; overload;
-    function Find(const AId: Int64): TJSONObject; overload;
+    function Find: TJSONArray;
+    function FindById(const AId: Int64): TJSONObject;
     function FindByFieldLiked(const AField: String; const AValue: String): TJSONArray;
     function FindByFieldExactly(const AField: String; const AValue: String): TJSONArray;
     function Update(const AJSONObject: TJSONObject): TJSONObject;
@@ -48,8 +48,8 @@ type
 
       procedure Insert(const AJSONObject: TJSONObject);
 
-      function Find: TJSONArray; overload;
-      function Find(const AId: Int64): TJSONObject; overload;
+      function Find: TJSONArray;
+      function FindById(const AId: Int64): TJSONObject;
       function FindByFieldLiked(const AField: String; const AValue: String): TJSONArray;
       function FindByFieldExactly(const AField: String; const AValue: String): TJSONArray;
       function Update(const AJSONObject: TJSONObject): TJSONObject;
@@ -120,7 +120,7 @@ begin
   end;
 end;
 
-function TGenericDAO<T>.Find(const AId: Int64): TJSONObject;
+function TGenericDAO<T>.FindById(const AId: Int64): TJSONObject;
 begin
   try
     FDAO.Find(AId);

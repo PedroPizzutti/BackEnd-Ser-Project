@@ -60,7 +60,7 @@ begin
   TUtils.ValidateId(LIdUser);
 
   FDAO := TGenericDAO<TUserEntity>.New;
-  FDAO.Find(LIdUser);
+  FDAO.FindById(LIdUser);
 
   FDAO.Delete('id', LIdUser.ToString);
 
@@ -77,7 +77,7 @@ begin
 
   FDAO := TGenericDAO<TUserEntity>.New;
 
-  FResponse.Send<TJSONObject>(FDAO.Find(LIdUser));
+  FResponse.Send<TJSONObject>(FDAO.FindById(LIdUser));
 end;
 
 procedure TControllerUser.Put;
@@ -89,7 +89,7 @@ begin
   TUtils.ValidateId(LIdUser);
 
   FDAO := TGenericDAO<TUserEntity>.New;
-  FDAO.Find(LIdUser);
+  FDAO.FindById(LIdUser);
 
   LRequest := FRequest.Body<TJSONObject>;
   LRequest.AddPair('id', LIdUser);
