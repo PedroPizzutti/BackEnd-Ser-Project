@@ -70,6 +70,8 @@ implementation
 constructor TModelUser.Create;
 begin
   FId := 0;
+  FToken := '';
+  FJSONUser := nil;
   FDAOUser := TGenericDAO<TUserEntity>.New;
 end;
 
