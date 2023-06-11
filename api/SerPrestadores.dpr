@@ -19,7 +19,8 @@ uses
   SerPrestadores.Controller.StatusApi in 'src\controller\statusApi\SerPrestadores.Controller.StatusApi.pas',
   SerPrestadores.Model.Success in 'src\model\success\SerPrestadores.Model.Success.pas',
   SerPrestadores.Model.Success.Entity in 'src\model\success\entity\SerPrestadores.Model.Success.Entity.pas',
-  SerPrestadores.Model.Token.Entity in 'src\model\token\entity\SerPrestadores.Model.Token.Entity.pas';
+  SerPrestadores.Model.Token.Entity in 'src\model\token\entity\SerPrestadores.Model.Token.Entity.pas',
+  SerPrestadores.Model.User in 'src\model\user\SerPrestadores.Model.User.pas';
 
 var
 

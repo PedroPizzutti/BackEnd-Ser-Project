@@ -8,7 +8,6 @@ uses
   System.StrUtils,
   System.SysUtils,
   System.Types,
-  BCrypt,
   Horse,
   Horse.GBSwagger,
   Horse.Jhonson,
@@ -16,18 +15,14 @@ uses
   Rest.Json,
   GBSwagger.Path.Attributes,
   SerPrestadores.Utils,
-  SerPrestadores.Model.Dao.GenericDAO,
   SerPrestadores.Model.User.Entity,
-  SerPrestadores.Model.Success,
+  SerPrestadores.Model.User,
   SerPrestadores.Model.Success.Entity,
   SerPrestadores.Model.Error.Entity;
 
 type
   [SwagPath('users', 'user')]
   TControllerUser = class(THorseGBSwagger)
-    private
-      var FDAO: IGenericDAO<TUserEntity>;
-      procedure ValidateFieldsUser(AJSONObject: TJSONObject);
     public
       [SwagGET('/:id', 'lists a user in detail')]
       [SwagResponse(200, TUserEntity)]
@@ -43,7 +38,7 @@ type
       procedure Put;
 
       [SwagDELETE('/:id', 'delete a user')]
-      [SwagResponse(204, nil)]
+      [SwagResponse(200, TSuccessEntity)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Delete;
@@ -56,77 +51,65 @@ implementation
 procedure TControllerUser.Delete;
 var
   LIdUser: Int64;
-begin
-  LIdUser := FRequest.Params.Items['id'].ToInteger;
-
-  TUtils.ValidateId(LIdUser);
-
-  FDAO := TGenericDAO<TUserEntity>.New;
-  FDAO.FindById(LIdUser);
-
-  FDAO.Delete('id', LIdUser.ToString);
-
-  FResponse.Status(THTTPStatus.NoContent);
-end;
-
-procedure TControllerUser.GetById;
-var
-  LIdUser: Int64;
-begin
-  LIdUser := FRequest.Params.Items['id'].ToInteger;
-
-  TUtils.ValidateId(LIdUser);
-
-  FDAO := TGenericDAO<TUserEntity>.New;
-
-  FResponse.Send<TJSONObject>(FDAO.FindById(LIdUser));
-end;
-
-procedure TControllerUser.Put;
-var
-  LIdUser: Int64;
-  LRequest: TJSONObject;
+  LToken: String;
+  LAuthorization: String;
   LResponse: TJSONObject;
 begin
   LIdUser := FRequest.Params.Items['id'].ToInteger;
   TUtils.ValidateId(LIdUser);
 
-  FDAO := TGenericDAO<TUserEntity>.New;
-  FDAO.FindById(LIdUser);
-
-  LRequest := FRequest.Body<TJSONObject>;
-  LRequest.AddPair('id', LIdUser);
-
-  Self.ValidateFieldsUser(LRequest);
-
-  TUtils.EncryptPasswordJSON(LRequest, 'password');
-
-  FDAO.Update(LRequest);
+  LAuthorization := FRequest.Headers.Items['Authorization'];
+  LToken := LAuthorization.Split([' '])[1];
 
   LResponse :=
-    TModelSuccess
+    TModelUser
       .New
-      .SetMsg('user updated')
-      .GetEntity
-      .GetJsonEntity;
+      .SetId(LIdUser)
+      .SetToken(LToken)
+      .DeleteUser;
 
   FResponse.Send<TJSONObject>(LResponse);
 end;
 
-procedure TControllerUser.ValidateFieldsUser(AJSONObject: TJSONObject);
+procedure TControllerUser.GetById;
 var
-  LFieldsToValidate: TStringList;
+  LIdUser: Int64;
+  LResponse: TJSONObject;
 begin
-  LFieldsToValidate := TStringList.Create;
-  try
-    LFieldsToValidate.Add('name');
-    LFieldsToValidate.Add('email');
-    LFieldsToValidate.Add('password');
+  LIdUser := FRequest.Params.Items['id'].ToInteger;
+  TUtils.ValidateId(LIdUser);
 
-    TUtils.ValidateFieldsString(AJSONObject, LFieldsToValidate);
-  finally
-    LFieldsToValidate.DisposeOf;
-  end;
+  LResponse :=
+    TModelUser
+      .New
+      .SetId(LIdUser)
+      .GetUserById;
+
+  FResponse.Send<TJSONObject>(LResponse);
+end;
+
+procedure TControllerUser.Put;
+var
+  LIdUser: Int64;
+  LResponse: TJSONObject;
+  LToken: String;
+  LAuthorization: String;
+begin
+  LIdUser := FRequest.Params.Items['id'].ToInteger;
+  TUtils.ValidateId(LIdUser);
+
+  LAuthorization := FRequest.Headers.Items['Authorization'];
+  LToken := LAuthorization.Split([' '])[1];
+
+  LResponse :=
+    TModelUser
+      .New
+      .SetToken(LToken)
+      .SetId(LIdUser)
+      .SetJSONUser(FRequest.Body<TJSONObject>)
+      .UpdateUser;
+
+  FResponse.Send<TJSONObject>(LResponse);
 end;
 
 end.

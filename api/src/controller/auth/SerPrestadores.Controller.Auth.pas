@@ -8,7 +8,6 @@ uses
   System.StrUtils,
   System.SysUtils,
   System.Types,
-  BCrypt,
   Horse,
   Horse.GBSwagger,
   Horse.Jhonson,
@@ -16,8 +15,7 @@ uses
   Rest.Json,
   GBSwagger.Path.Attributes,
   SerPrestadores.Utils,
-  SerPrestadores.Model.Dao.GenericDAO,
-  SerPrestadores.Model.Success,
+  SerPrestadores.Model.User,
   SerPrestadores.Model.User.Entity,
   SerPrestadores.Model.Token.Entity,
   SerPrestadores.Model.Success.Entity,
@@ -26,11 +24,6 @@ uses
 type
   [SwagPath('auth', 'authentication')]
   TControllerAuth = class(THorseGBSwagger)
-    private
-      var FDAO: IGenericDAO<TUserEntity>;
-      function ValidateLogin(AJSONObject: TJSONObject): String;
-      procedure ValidateFieldsCreateUser(AJSONObject: TJSONObject);
-      procedure ValidateFieldsLoginUser(AJSONObject: TJSONObject);
     public
       [SwagPOST('signup', 'create an user')]
       [SwagResponse(201, TSuccessEntity)]
@@ -57,18 +50,21 @@ implementation
 
 procedure TControllerAuth.GetLoggedUser;
 var
-  LIdUser: Int64;
+  LResponse: TJSONObject;
   LToken: String;
   LAuthorization: String;
 begin
   LAuthorization := FRequest.Headers.Items['Authorization'];
   LToken := LAuthorization.Split([' '])[1];
 
-  LIdUser := TUtils.GetUserIdByToken(LToken);
+  LResponse :=
+    TModelUser
+      .New
+      .SetToken(LToken)
+      .GetUserIdByToken
+      .GetUserById;
 
-  FDAO := TGenericDAO<TUserEntity>.New;
-
-  FResponse.Send<TJSONObject>(FDAO.FindById(LIdUser));
+  FResponse.Send<TJSONObject>(LResponse);
 end;
 
 procedure TControllerAuth.Post;
@@ -78,97 +74,35 @@ var
 begin
   LRequest := FRequest.Body<TJSONObject>;
 
-  Self.ValidateFieldsCreateUser(LRequest);
-
   TUtils.EncryptPasswordJSON(LRequest, 'password');
 
-  FDAO := TGenericDAO<TUserEntity>.New;
-  FDAO.Insert(LRequest);
-
   LResponse :=
-    TModelSuccess
+    TModelUser
       .New
-      .SetMsg('user created')
-      .GetEntity
-      .GetJsonEntity;
+      .SetJSONUser(LRequest)
+      .PostUser;
 
   FResponse.Status(THTTPStatus.Created).Send<TJSONObject>(LResponse);
 end;
 
 procedure TControllerAuth.PostToken;
 var
-  LIdUser: String;
   LRequest: TJSONObject;
   LResponse: TJSONObject;
 begin
   LRequest := FRequest.Body<TJSONObject>;
 
-  Self.ValidateFieldsLoginUser(LRequest);
-
-  LIdUser := Self.ValidateLogin(LRequest);
+  var LToken :=
+    TModelUser
+      .New
+      .SetJSONUser(LRequest)
+      .Login
+      .GenerateToken;
 
   LResponse := TJSONObject.Create;
-  LResponse.AddPair('token', TUtils.GenerateToken(LIdUser));
+  LResponse.AddPair('token', LToken);
 
   FResponse.Status(THTTPStatus.Created).Send(LResponse);
-end;
-
-procedure TControllerAuth.ValidateFieldsCreateUser(AJSONObject: TJSONObject);
-var
-  LFieldsToValidate: TStringList;
-begin
-  LFieldsToValidate := TStringList.Create;
-  try
-    LFieldsToValidate.Add('name');
-    LFieldsToValidate.Add('email');
-    LFieldsToValidate.Add('password');
-
-    TUtils.ValidateFieldsString(AJSONObject, LFieldsToValidate);
-  finally
-    LFieldsToValidate.DisposeOf;
-  end;
-end;
-
-procedure TControllerAuth.ValidateFieldsLoginUser(AJSONObject: TJSONObject);
-var
-  LFieldsToValidate: TStringList;
-begin
-  LFieldsToValidate := TStringList.Create;
-  try
-    LFieldsToValidate.Add('email');
-    LFieldsToValidate.Add('password');
-
-    TUtils.ValidateFieldsString(AJSONObject, LFieldsToValidate);
-  finally
-    LFieldsToValidate.DisposeOf;
-  end;
-end;
-
-function TControllerAuth.ValidateLogin(AJSONObject: TJSONObject): String;
-var
-  LIdUser: String;
-  LPasswordUser: String;
-  LEmailRequest: String;
-  LPasswordRequest: String;
-begin
-  LEmailRequest := AJSONObject.GetValue<String>('email');
-  LPasswordRequest := AJSONObject.GetValue<String>('password');
-
-  FDAO := TGenericDAO<TUserEntity>.New;
-  FDAO.FindByFieldExactly('email', LEmailRequest);
-  if FDAO.DataSet.RecordCount = 0 then
-  begin
-    raise EHorseException.New.Error('user not found').Status(THTTPStatus.BadRequest);
-  end;
-  LPasswordUser := FDAO.DataSet.FieldByName('password').AsString;
-  if not TBCrypt.CompareHash(LPasswordRequest, LPasswordUser) then
-  begin
-    raise EHorseException.New.Error('wrong password').Status(THTTPStatus.BadRequest);
-  end;
-
-  LIdUser := FDAO.DataSet.FieldByName('id').AsString;
-
-  Result := LIdUser;
 end;
 
 end.

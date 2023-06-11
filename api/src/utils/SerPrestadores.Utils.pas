@@ -17,8 +17,6 @@ uses
 type
   TUtils = class
   public
-    class function GenerateToken(AIdUser: String): String;
-    class function GetUserIdByToken(AToken: String): Int64;
     class procedure EncryptPasswordJSON(var AJSONObject: TJSONObject; const APasswordField: String);
     class procedure ValidateId(const AId: Int64);
     class procedure ValidateFieldsString(const AJSONObject: TJSONObject; const AFieldList: TStringList);
@@ -44,30 +42,6 @@ begin
   except on E: Exception do
     raise EHorseException.New.Error('encrypt error - ' + E.Message).Status(THTTPStatus.InternalServerError);
   end;
-end;
-
-class function TUtils.GenerateToken(AIdUser: String): String;
-var
-  LJWT: TJWT;
-begin
-  LJWT := TJWT.Create;
-  try
-    LJWT.Claims.Issuer := 'SerPrestadores';
-    LJWT.Claims.Subject := AIdUser;
-    LJWT.Claims.Expiration := Now + 1;
-
-    Result := TJOSE.SHA256CompactToken('SER', LJWT);
-  finally
-    LJWT.DisposeOf;
-  end;
-end;
-
-class function TUtils.GetUserIdByToken(AToken: String): Int64;
-var
-  LJWT: TJWT;
-begin
-  LJWT := TJOSE.DeserializeOnly(AToken);
-  Result := LJWT.Claims.Subject.ToInteger;
 end;
 
 class procedure TUtils.ValidateFieldsString(const AJSONObject: TJSONObject;
@@ -109,7 +83,7 @@ class procedure TUtils.ValidateId(const AId: Int64);
 begin
   if Aid <= 0 then
   begin
-    raise EHorseException.New.Error('It is necessary to informe an id').Status(THTTPStatus.BadRequest);
+    raise EHorseException.New.Error('It is necessary to inform an id').Status(THTTPStatus.BadRequest);
   end;
 end;
 
