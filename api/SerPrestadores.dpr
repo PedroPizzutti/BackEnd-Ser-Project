@@ -20,7 +20,8 @@ uses
   SerPrestadores.Model.Success.Entity in 'src\model\success\entity\SerPrestadores.Model.Success.Entity.pas',
   SerPrestadores.Model.Token.Entity in 'src\model\token\entity\SerPrestadores.Model.Token.Entity.pas',
   SerPrestadores.Model.User in 'src\model\user\SerPrestadores.Model.User.pas',
-  SerPrestadores.Model.Dao.GenericDAO in 'src\model\dao\SerPrestadores.Model.Dao.GenericDAO.pas';
+  SerPrestadores.Model.Dao.GenericDAO in 'src\model\dao\SerPrestadores.Model.Dao.GenericDAO.pas',
+  SerPrestadores.Model.Provider in 'src\model\provider\SerPrestadores.Model.Provider.pas';
 
 var
 

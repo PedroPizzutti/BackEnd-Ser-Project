@@ -14,9 +14,8 @@ uses
   Horse.Jhonson,
   Horse.Commons,
   Rest.Json,
+  SerPrestadores.Model.Provider,
   SerPrestadores.Utils,
-  SerPrestadores.Model.Dao.GenericDAO,
-  SerPrestadores.Model.Success,
   SerPrestadores.Model.Provider.Entity,
   SerPrestadores.Model.Success.Entity,
   SerPrestadores.Model.Error.Entity;
@@ -24,10 +23,6 @@ uses
 type
   [SwagPath('providers', 'providers')]
   TControllerProvider = class(THorseGBSwagger)
-    private
-      var FDAO: IGenericDAO<TProviderEntity>;
-      procedure ValidateProvider(AJSONObject: TJSONObject);
-
     public
       [SwagGET('', 'lists all the providers')]
       [SwagResponse(200, TProviderEntity, 'provider list' ,True)]
@@ -64,7 +59,7 @@ type
 
       [SwagDELETE('/:id', 'delete a provider')]
       [SwagParamPath('id', 'provider id')]
-      [SwagResponse(204, nil)]
+      [SwagResponse(200, TSuccessEntity)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Delete;
@@ -77,59 +72,74 @@ implementation
 procedure TControllerProvider.Delete;
 var
   LIdProvider: Int64;
+  LResponse: TJSONObject;
 begin
   LIdProvider := FRequest.Params.Items['id'].ToInteger;
   TUtils.ValidateId(LIdProvider);
 
-  FDAO := TGenericDAO<TProviderEntity>.New;
-  FDAO.FindById(LIdProvider);
+  LResponse :=
+    TModelProvider
+      .New
+      .SetId(LIdProvider)
+      .DeleteProvider;
 
-  FDAO.Delete('id', LIdProvider.ToString);
-
-  FResponse.Status(THTTPStatus.NoContent);
+  FResponse.Send<TJSONObject>(LResponse);
 end;
 
 procedure TControllerProvider.Get;
+var
+  LResponse: TJSONArray;
 begin
-  FDAO := TGenericDAO<TProviderEntity>.New;
-  FResponse.Send<TJSONArray>(FDAO.Find);
+  LResponse :=
+    TModelProvider
+      .New
+      .GetAllProviders;
+
+  FResponse.Send<TJSONArray>(LResponse);
 end;
 
 procedure TControllerProvider.GetById;
 var
   LIdProvider: Int64;
+  LResponse: TJSONObject;
 begin
   LIdProvider := FRequest.Params.Items['id'].ToInteger;
   TUtils.ValidateId(LIdProvider);
 
-  FDAO := TGenericDAO<TProviderEntity>.New;
-  FResponse.Send<TJSONObject>(FDAO.FindById(LIdProvider));
+  LResponse :=
+    TModelProvider
+      .New
+      .SetId(LIdProvider)
+      .GetProviderById;
+
+  FResponse.Send<TJSONObject>(LResponse);
 end;
 
 procedure TControllerProvider.GetByName;
 var
   LName : String;
+  LResponse: TJSONArray;
 begin
   LName := FRequest.Query.Items['name'];
-  FDAO := TGenericDAO<TProviderEntity>.New;
-  FResponse.Send<TJSONArray>(FDAO.FindByFieldLiked('name', LName));
+
+  LResponse :=
+    TModelProvider
+      .New
+      .SetName(LName)
+      .GetProviderByNameLiked;
+
+  FResponse.Send<TJSONArray>(LResponse);
 end;
 
 procedure TControllerProvider.Post;
 var
   LResponse: TJSONObject;
 begin
-  Self.ValidateProvider(FRequest.Body<TJSONObject>);
-
-  FDAO := TGenericDAO<TProviderEntity>.New;
-  FDAO.Insert(FRequest.Body<TJSONObject>);
-
   LResponse :=
-    TModelSuccess
+    TModelProvider
       .New
-      .SetMsg('provider created')
-      .GetEntity
-      .GetJsonEntity;
+      .SetJSONProvider(FRequest.Body<TJSONObject>)
+      .PostProvider;
 
   FResponse.Status(THTTPStatus.Created).Send<TJSONObject>(LResponse);
 end;
@@ -138,46 +148,18 @@ procedure TControllerProvider.Put;
 var
   LIdProvider: Int64;
   LResponse: TJSONObject;
-  LRequest: TJSONObject;
 begin
   LIdProvider := FRequest.Params.Items['id'].ToInteger;
   TUtils.ValidateId(LIdProvider);
 
-  FDAO := TGenericDAO<TProviderEntity>.New;
-  FDAO.FindById(LIdProvider);
-
-  LRequest := FRequest.Body<TJSONObject>;
-  LRequest.AddPair('id', LIdProvider);
-
-  Self.ValidateProvider(LRequest);
-
-  FDAO.Update(LRequest);
-
   LResponse :=
-    TModelSuccess
+    TModelProvider
       .New
-      .SetMsg('provider updated')
-      .GetEntity
-      .GetJsonEntity;
+      .SetId(LIdProvider)
+      .SetJSONProvider(FRequest.Body<TJSONObject>)
+      .UpdateProvider;
 
   FResponse.Send<TJSONObject>(LResponse);
-end;
-
-procedure TControllerProvider.ValidateProvider(AJSONObject: TJSONObject);
-var
-  LFieldsToValidate: TStringList;
-begin
-  LFieldsToValidate := TStringList.Create;
-  try
-    LFieldsToValidate.Add('name');
-    LFieldsToValidate.Add('phone');
-    LFieldsToValidate.Add('email');
-    LFieldsToValidate.Add('cpf');
-
-    TUtils.ValidateFieldsString(AJSONObject, LFieldsToValidate);
-  finally
-    LFieldsToValidate.DisposeOf;
-  end;
 end;
 
 end.
