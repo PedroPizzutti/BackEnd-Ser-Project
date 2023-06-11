@@ -39,7 +39,7 @@ type
     private
       var FDAO: ISimpleDAO<T>;
       var FConnection: IConnection;
-      var FDataSource: TDataSource; 
+      var FDataSource: TDataSource;
       var FSimpleQuery: ISimpleQuery;
     public
       constructor Create;
@@ -71,7 +71,7 @@ begin
   FDataSource := TDataSource.Create(nil);
   FConnection := TConnection.New;
   FSimpleQuery := TSimpleQueryFiredac.New(FConnection.Connect);
-  FDAO := TSimpleDAO<T>.New(FSimpleQuery).DataSource(FDataSource); 
+  FDAO := TSimpleDAO<T>.New(FSimpleQuery).DataSource(FDataSource);
 end;
 
 function TGenericDAO<T>.DAO: ISimpleDAO<T>;

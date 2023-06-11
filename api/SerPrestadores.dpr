@@ -8,7 +8,6 @@ uses
   System.SysUtils,
   App in 'src\App.pas',
   SerPrestadores.Resource.Connection in 'src\resource\connection\SerPrestadores.Resource.Connection.pas',
-  SerPrestadores.Model.Dao.GenericDAO in 'src\model\genericDao\SerPrestadores.Model.Dao.GenericDAO.pas',
   SerPrestadores.Model.Provider.Entity in 'src\model\provider\entity\SerPrestadores.Model.Provider.Entity.pas',
   SerPrestadores.Controller.Provider in 'src\controller\provider\SerPrestadores.Controller.Provider.pas',
   SerPrestadores.Model.Error.Entity in 'src\model\error\entity\SerPrestadores.Model.Error.Entity.pas',
@@ -20,7 +19,8 @@ uses
   SerPrestadores.Model.Success in 'src\model\success\SerPrestadores.Model.Success.pas',
   SerPrestadores.Model.Success.Entity in 'src\model\success\entity\SerPrestadores.Model.Success.Entity.pas',
   SerPrestadores.Model.Token.Entity in 'src\model\token\entity\SerPrestadores.Model.Token.Entity.pas',
-  SerPrestadores.Model.User in 'src\model\user\SerPrestadores.Model.User.pas';
+  SerPrestadores.Model.User in 'src\model\user\SerPrestadores.Model.User.pas',
+  SerPrestadores.Model.Dao.GenericDAO in 'src\model\dao\SerPrestadores.Model.Dao.GenericDAO.pas';
 
 var
 
