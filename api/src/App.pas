@@ -15,7 +15,8 @@ uses
   Horse.HandleException,
   SerPrestadores.Controller.User,
   SerPrestadores.Controller.Auth,
-  SerPrestadores.Controller.Provider;
+  SerPrestadores.Controller.Provider,
+  SerPrestadores.Controller.StatusApi;
 
 type
   TApp = class
@@ -57,7 +58,7 @@ begin
   LHorseJWTConfig :=
     THorseJWTConfig
       .New
-      .SkipRoutes(['/auth/signin', '/auth/signup', '/swagger/doc/html', '/swagger/doc/json']);
+      .SkipRoutes(['/statusapi', '/auth/signin', '/auth/signup', '/swagger/doc/html', '/swagger/doc/json']);
 
   Result := LHorseJWTConfig;
 end;
@@ -89,6 +90,7 @@ begin
   THorseGBSwaggerRegister.RegisterPath(TControllerUser);
   THorseGBSwaggerRegister.RegisterPath(TControllerAuth);
   THorseGBSwaggerRegister.RegisterPath(TControllerProvider);
+  THorseGBSwaggerRegister.RegisterPath(TControllerStatusApi);
 end;
 
 procedure TApp.Start(const APort: Int64);

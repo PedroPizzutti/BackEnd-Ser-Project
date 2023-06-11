@@ -15,9 +15,13 @@ uses
   SerPrestadores.Model.User.Entity in 'src\model\user\entity\SerPrestadores.Model.User.Entity.pas',
   SerPrestadores.Controller.User in 'src\controller\user\SerPrestadores.Controller.User.pas',
   SerPrestadores.Utils in 'src\utils\SerPrestadores.Utils.pas',
-  SerPrestadores.Controller.Auth in 'src\controller\auth\SerPrestadores.Controller.Auth.pas';
+  SerPrestadores.Controller.Auth in 'src\controller\auth\SerPrestadores.Controller.Auth.pas',
+  SerPrestadores.Controller.StatusApi in 'src\controller\statusApi\SerPrestadores.Controller.StatusApi.pas',
+  SerPrestadores.Model.Success in 'src\model\success\SerPrestadores.Model.Success.pas',
+  SerPrestadores.Model.Success.Entity in 'src\model\success\entity\SerPrestadores.Model.Success.Entity.pas';
 
 var
+
   App: TApp;
 begin
   App := TApp.Create;
