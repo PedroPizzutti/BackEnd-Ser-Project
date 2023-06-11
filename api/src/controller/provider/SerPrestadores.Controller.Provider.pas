@@ -16,7 +16,9 @@ uses
   Rest.Json,
   SerPrestadores.Utils,
   SerPrestadores.Model.Dao.GenericDAO,
+  SerPrestadores.Model.Success,
   SerPrestadores.Model.Provider.Entity,
+  SerPrestadores.Model.Success.Entity,
   SerPrestadores.Model.Error.Entity;
 
 type
@@ -48,14 +50,14 @@ type
       procedure GetByName;
 
       [SwagPOST('', 'create a provider')]
-      [SwagResponse(201, nil)]
+      [SwagResponse(201, TSuccessEntity)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Post;
 
       [SwagPUT('/:id', 'update a provider')]
       [SwagParamPath('id', 'provider id')]
-      [SwagResponse(200, nil)]
+      [SwagResponse(200, TSuccessEntity)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Put;
@@ -114,18 +116,28 @@ begin
 end;
 
 procedure TControllerProvider.Post;
+var
+  LResponse: TJSONObject;
 begin
   Self.ValidateProvider(FRequest.Body<TJSONObject>);
 
   FDAO := TGenericDAO<TProviderEntity>.New;
   FDAO.Insert(FRequest.Body<TJSONObject>);
 
-  FResponse.Status(THTTPStatus.Created);
+  LResponse :=
+    TModelSuccess
+      .New
+      .SetMsg('provider created')
+      .GetEntity
+      .GetJsonEntity;
+
+  FResponse.Status(THTTPStatus.Created).Send<TJSONObject>(LResponse);
 end;
 
 procedure TControllerProvider.Put;
 var
   LIdProvider: Int64;
+  LResponse: TJSONObject;
   LRequest: TJSONObject;
 begin
   LIdProvider := FRequest.Params.Items['id'].ToInteger;
@@ -140,6 +152,15 @@ begin
   Self.ValidateProvider(LRequest);
 
   FDAO.Update(LRequest);
+
+  LResponse :=
+    TModelSuccess
+      .New
+      .SetMsg('provider updated')
+      .GetEntity
+      .GetJsonEntity;
+
+  FResponse.Send<TJSONObject>(LResponse);
 end;
 
 procedure TControllerProvider.ValidateProvider(AJSONObject: TJSONObject);

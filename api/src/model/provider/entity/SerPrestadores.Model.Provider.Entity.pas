@@ -35,13 +35,13 @@ type
       property Id: Int64 read FId write SetId;
 
       [SwagString]
-      [SwagProp('name', 'nome')]
+      [SwagProp('name', 'name')]
       [SwagRequired]
       [Campo('name'), NotNull]
       property Name: String read FName write SetName;
 
       [SwagString]
-      [SwagProp('phone', 'telefone')]
+      [SwagProp('phone', 'telephone')]
       [SwagRequired]
       [Campo('phone'), NotNull]
       property Phone: String read FPhone write SetPhone;
@@ -59,12 +59,12 @@ type
       property Cpf: String read FCpf write SetCpf;
 
       [SwagString]
-      [SwagProp('bio', 'Pequena biografia')]
+      [SwagProp('bio', 'a little biography')]
       [Campo('bio'), NotNull]
       property Bio: String read FBio write SetBio;
 
       [SwagString]
-      [SwagProp('profilePic', 'Foto de perfil')]
+      [SwagProp('profilePic', 'profile picture')]
       [Campo('profilePic')]
       property ProfilePic: String read FProfilePic write SetProfilePic;
   end;

@@ -32,7 +32,7 @@ type
 
       [SwagString]
       [SwagRequired]
-      [SwagProp('name', 'nome')]
+      [SwagProp('name', 'name')]
       [Campo('name'), NotNull]
       property name: String read Fname write Setname;
 
@@ -44,12 +44,12 @@ type
 
       [SwagString]
       [SwagRequired]
-      [SwagProp('password', 'senha')]
+      [SwagProp('password', 'password')]
       [Campo('password'), NotNull]
       property password: String read Fpassword write Setpassword;
 
       [SwagString]
-      [SwagProp('profilePic', 'foto de perfil')]
+      [SwagProp('profilePic', 'profile picture')]
       [Campo('profilePic')]
       property profilePic: String read FprofilePic write SetprofilePic;
   end;

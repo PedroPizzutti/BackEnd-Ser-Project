@@ -18,6 +18,8 @@ uses
   SerPrestadores.Utils,
   SerPrestadores.Model.Dao.GenericDAO,
   SerPrestadores.Model.User.Entity,
+  SerPrestadores.Model.Success,
+  SerPrestadores.Model.Success.Entity,
   SerPrestadores.Model.Error.Entity;
 
 type
@@ -25,7 +27,7 @@ type
   TControllerUser = class(THorseGBSwagger)
     private
       var FDAO: IGenericDAO<TUserEntity>;
-      procedure ValidateUser(AJSONObject: TJSONObject);
+      procedure ValidateFieldsUser(AJSONObject: TJSONObject);
     public
       [SwagGET('/:id', 'lists a user in detail')]
       [SwagResponse(200, TUserEntity)]
@@ -35,7 +37,7 @@ type
 
       [SwagPut('/:id', 'update a user')]
       [SwagParamPath('id', 'user id')]
-      [SwagResponse(200, nil)]
+      [SwagResponse(200, TSuccessEntity)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Put;
@@ -84,6 +86,7 @@ procedure TControllerUser.Put;
 var
   LIdUser: Int64;
   LRequest: TJSONObject;
+  LResponse: TJSONObject;
 begin
   LIdUser := FRequest.Params.Items['id'].ToInteger;
   TUtils.ValidateId(LIdUser);
@@ -94,14 +97,23 @@ begin
   LRequest := FRequest.Body<TJSONObject>;
   LRequest.AddPair('id', LIdUser);
 
-  Self.ValidateUser(LRequest);
+  Self.ValidateFieldsUser(LRequest);
 
   TUtils.EncryptPasswordJSON(LRequest, 'password');
 
   FDAO.Update(LRequest);
+
+  LResponse :=
+    TModelSuccess
+      .New
+      .SetMsg('user updated')
+      .GetEntity
+      .GetJsonEntity;
+
+  FResponse.Send<TJSONObject>(LResponse);
 end;
 
-procedure TControllerUser.ValidateUser(AJSONObject: TJSONObject);
+procedure TControllerUser.ValidateFieldsUser(AJSONObject: TJSONObject);
 var
   LFieldsToValidate: TStringList;
 begin

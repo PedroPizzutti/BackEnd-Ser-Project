@@ -20,10 +20,9 @@ type
       function SetMsg(AMsg: String): IModelSuccess;
 
       procedure LoadEntity;
-
+    public
       constructor Create;
       destructor Destroy; override;
-    public
       class function New: IModelSuccess;
   end;
 

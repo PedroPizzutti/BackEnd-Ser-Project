@@ -14,7 +14,7 @@ type
 
     public
       [SwagString]
-      [SwagProp('error', 'descrição do erro capturado na execução')]
+      [SwagProp('error', 'description error captured in exception')]
       property Erro: String read FErro write SetErro;
   end;
 

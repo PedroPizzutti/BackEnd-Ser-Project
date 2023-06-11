@@ -10,10 +10,6 @@ uses
   System.Types,
   BCrypt,
   Horse,
-  Horse.JWT,
-  JOSE.Types.Bytes,
-  JOSE.Core.JWT,
-  JOSE.Core.Builder,
   Horse.GBSwagger,
   Horse.Jhonson,
   Horse.Commons,
@@ -21,7 +17,10 @@ uses
   GBSwagger.Path.Attributes,
   SerPrestadores.Utils,
   SerPrestadores.Model.Dao.GenericDAO,
+  SerPrestadores.Model.Success,
   SerPrestadores.Model.User.Entity,
+  SerPrestadores.Model.Token.Entity,
+  SerPrestadores.Model.Success.Entity,
   SerPrestadores.Model.Error.Entity;
 
 type
@@ -34,13 +33,13 @@ type
       procedure ValidateFieldsLoginUser(AJSONObject: TJSONObject);
     public
       [SwagPOST('signup', 'create an user')]
-      [SwagResponse(201, nil)]
+      [SwagResponse(201, TSuccessEntity)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure Post;
 
       [SwagPOST('signin', 'generate a token')]
-      [SwagResponse(201, nil)]
+      [SwagResponse(201, TTokenEntity)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure PostToken;
@@ -75,6 +74,7 @@ end;
 procedure TControllerAuth.Post;
 var
   LRequest: TJSONObject;
+  LResponse: TJSONObject;
 begin
   LRequest := FRequest.Body<TJSONObject>;
 
@@ -85,7 +85,14 @@ begin
   FDAO := TGenericDAO<TUserEntity>.New;
   FDAO.Insert(LRequest);
 
-  FResponse.Status(THTTPStatus.Created);
+  LResponse :=
+    TModelSuccess
+      .New
+      .SetMsg('user created')
+      .GetEntity
+      .GetJsonEntity;
+
+  FResponse.Status(THTTPStatus.Created).Send<TJSONObject>(LResponse);
 end;
 
 procedure TControllerAuth.PostToken;
@@ -149,14 +156,11 @@ begin
 
   FDAO := TGenericDAO<TUserEntity>.New;
   FDAO.FindByFieldExactly('email', LEmailRequest);
-
   if FDAO.DataSet.RecordCount = 0 then
   begin
     raise EHorseException.New.Error('user not found').Status(THTTPStatus.BadRequest);
   end;
-
   LPasswordUser := FDAO.DataSet.FieldByName('password').AsString;
-
   if not TBCrypt.CompareHash(LPasswordRequest, LPasswordUser) then
   begin
     raise EHorseException.New.Error('wrong password').Status(THTTPStatus.BadRequest);

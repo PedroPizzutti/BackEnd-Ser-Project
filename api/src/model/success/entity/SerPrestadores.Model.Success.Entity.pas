@@ -15,7 +15,7 @@ type
 
     public
       [SwagString]
-      [SwagProp('Success', 'success description')]
+      [SwagProp('success', 'success description')]
       property Success: String read FSucess write SetSuccess;
 
       constructor Create;
