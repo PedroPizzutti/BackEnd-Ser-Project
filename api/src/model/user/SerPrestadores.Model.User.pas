@@ -78,6 +78,9 @@ end;
 function TModelUser.PostUser: TJSONObject;
 begin
   Self.ValidateFieldsUser;
+
+  TUtils.EncryptPasswordJSON(FJSONUser, 'password');
+
   FDAOUser.Insert(FJSONUser);
 
   Result := 

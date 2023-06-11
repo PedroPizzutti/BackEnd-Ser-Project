@@ -74,8 +74,6 @@ var
 begin
   LRequest := FRequest.Body<TJSONObject>;
 
-  TUtils.EncryptPasswordJSON(LRequest, 'password');
-
   LResponse :=
     TModelUser
       .New
