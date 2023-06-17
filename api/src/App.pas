@@ -11,7 +11,9 @@ uses
   Horse.JWT,
   Horse.CORS,
   Horse.Jhonson,
+  Horse.Paginate,
   Horse.GBSwagger,
+  Horse.Compression,
   Horse.HandleException,
   SerPrestadores.Controller.User,
   SerPrestadores.Controller.Auth,
@@ -78,8 +80,10 @@ end;
 
 procedure TApp.RegisterMiddlewares;
 begin
-  Self.FApp.Use(Jhonson);
   Self.FApp.Use(CORS);
+  Self.FApp.Use(Compression(1024));
+  Self.FApp.Use(Jhonson);
+  Self.FApp.Use(Paginate);
   Self.FApp.Use(HorseSwagger);
   Self.FApp.Use(HandleException);
   Self.FApp.Use(HorseJWT('SER', Self.HorseJWTConfig));

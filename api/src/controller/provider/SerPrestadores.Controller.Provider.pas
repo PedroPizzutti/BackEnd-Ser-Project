@@ -25,6 +25,7 @@ type
   TControllerProvider = class(THorseGBSwagger)
     public
       [SwagGET('', 'lists all the providers')]
+      [SwagParamQuery('name', 'order by asc or desc')]
       [SwagResponse(200, TProviderEntity, 'provider list' ,True)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
@@ -88,11 +89,15 @@ end;
 
 procedure TControllerProvider.Get;
 var
+  LOrdenation: String;
   LResponse: TJSONArray;
 begin
+  LOrdenation := FRequest.Query.Items['name'];
+
   LResponse :=
     TModelProvider
       .New
+      .SetOrder('name', LOrdenation)
       .GetAllProviders;
 
   FResponse.Send<TJSONArray>(LResponse);
