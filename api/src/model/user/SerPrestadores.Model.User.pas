@@ -14,6 +14,8 @@ uses
   JOSE.Core.Builder,
   SerPrestadores.Utils,
   SerPrestadores.Model.Dao.GenericDAO,
+  SerPrestadores.Model.Dao.Config,
+  SerPrestadores.Model.Dao.Entity.Config,
   SerPrestadores.Model.Success,
   SerPrestadores.Model.Success.Entity,
   SerPrestadores.Model.User.Entity;
@@ -143,10 +145,21 @@ begin
 end;
 
 function TModelUser.Login: IModelUser;
+var
+  LDAOConfig: TDAOConfigEntity;
+  LEmailInformado: String;
 begin
   Self.ValidateFieldsLogin;
 
-  FDAOUser.FindByFieldExactly('email', FJSONUser.GetValue<String>('email'));
+  LEmailInformado := FJSONUser.GetValue<String>('email');
+
+  LDAOConfig :=
+    TDAOConfig
+      .New
+      .SetWhereClause('email = ' + QuotedStr(LEmailInformado))
+      .GetConfig;
+
+  FDAOUser.Find(LDAOConfig);
 
   if FDAOUser.DataSet.RecordCount = 0 then
   begin
