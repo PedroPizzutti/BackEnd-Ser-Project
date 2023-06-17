@@ -37,8 +37,8 @@ implementation
 constructor TDAOConfig.Create;
 begin
   FConfigEntity := TDAOConfigEntity.Create;
-  FWhereClause := '';
-  FOrderByClause := '';
+  FWhereClause := '0 = 0';
+  FOrderByClause := '1 asc';
 end;
 
 destructor TDAOConfig.Destroy;

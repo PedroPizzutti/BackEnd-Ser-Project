@@ -18,6 +18,7 @@ type
   IModelProvider = interface
     function SetId(AIdProvider: Int64): IModelProvider;
     function SetName(AName: String): IModelProvider;
+    function SetOrder(AField: String; AOrdenation: String): IModelProvider;
     function SetJSONProvider(AJSONProvider: TJSONObject): IModelProvider;
 
     function PostProvider: TJSONObject;
@@ -29,29 +30,31 @@ type
   end;
 
   TModelProvider = class(TInterfacedObject, IModelProvider)
-    private
-      var FDAOConfig: TDAOConfigEntity;
-      var FId: Int64;
-      var FName: String;
-      var FJSONProvider: TJSONObject;
-      var FDAOProvider: IGenericDAO<TProviderEntity>;
+  private
+    var FDAOConfig: TDAOConfigEntity;
+    var FId: Int64;
+    var FName: String;
+    var FOrder: String;
+    var FJSONProvider: TJSONObject;
+    var FDAOProvider: IGenericDAO<TProviderEntity>;
 
-      function SetId(AIdProvider: Int64): IModelProvider;
-      function SetName(AName: String): IModelProvider;
-      function SetJSONProvider(AJSONProvider: TJSONObject): IModelProvider;
+    function SetId(AIdProvider: Int64): IModelProvider;
+    function SetName(AName: String): IModelProvider;
+    function SetOrder(AField: String; AOrdenation: String): IModelProvider;
+    function SetJSONProvider(AJSONProvider: TJSONObject): IModelProvider;
 
-      function PostProvider: TJSONObject;
-      function UpdateProvider: TJSONObject;
-      function DeleteProvider: TJSONObject;
-      function GetAllProviders: TJSONArray;
-      function GetProviderById: TJSONObject;
-      function GetProviderByNameLiked: TJSONArray;
+    function PostProvider: TJSONObject;
+    function UpdateProvider: TJSONObject;
+    function DeleteProvider: TJSONObject;
+    function GetAllProviders: TJSONArray;
+    function GetProviderById: TJSONObject;
+    function GetProviderByNameLiked: TJSONArray;
 
-      procedure ValidateFieldsProvider;
-    public
-      constructor Create;
-      destructor Destroy; override;
-      class function New: IModelProvider;
+    procedure ValidateFieldsProvider;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    class function New: IModelProvider;
   end;
 
 implementation
@@ -158,6 +161,15 @@ begin
   if AName <> '' then
   begin
     FName := AName;
+  end;
+  Result := Self;
+end;
+
+function TModelProvider.SetOrder(AField: String; AOrdenation: String): IModelProvider;
+begin
+  if (AField <> '') and (AOrdenation <> '') then
+  begin
+    FOrder := AField + ' ' + AOrdenation;
   end;
   Result := Self;
 end;
