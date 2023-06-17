@@ -16,6 +16,8 @@ uses
   DataSetConverter4D.Impl,
   DataSetConverter4D.Helper,
   DataSetConverter4D.Util,
+  SerPrestadores.Model.DAO.Entity.Config,
+  SerPrestadores.Model.Dao.Config,
   SerPrestadores.Resource.Connection;
 
 type
@@ -23,12 +25,12 @@ type
     ['{208A66C3-802F-4EEA-9950-D30411E42797}']
     procedure Insert(const AJSONObject: TJSONObject);
 
-    function Find: TJSONArray;
+    function Find: TJSONArray; overload;
+    function Find(AConfig: TDAOConfigEntity): TJSONArray; overload;
     function FindById(const AId: Int64): TJSONObject;
-    function FindByFieldLiked(const AField: String; const AValue: String): TJSONArray;
-    function FindByFieldExactly(const AField: String; const AValue: String): TJSONArray;
     function Update(const AJSONObject: TJSONObject): TJSONObject;
     function Delete(AField: String; AValue: String): TJSONObject;
+
     function DAO: ISimpleDAO<T>;
     function DataSet: TDataSet;
     function DataSetAsJSONArray: TJSONArray;
@@ -41,6 +43,7 @@ type
       var FConnection: IConnection;
       var FDataSource: TDataSource;
       var FSimpleQuery: ISimpleQuery;
+    procedure SetConfigs(AConfig: TDAOConfigEntity);
     public
       constructor Create;
       destructor Destroy; override;
@@ -48,12 +51,12 @@ type
 
       procedure Insert(const AJSONObject: TJSONObject);
 
-      function Find: TJSONArray;
+      function Find: TJSONArray; overload;
+      function Find(AConfig: TDAOConfigEntity): TJSONArray; overload;
       function FindById(const AId: Int64): TJSONObject;
-      function FindByFieldLiked(const AField: String; const AValue: String): TJSONArray;
-      function FindByFieldExactly(const AField: String; const AValue: String): TJSONArray;
       function Update(const AJSONObject: TJSONObject): TJSONObject;
       function Delete(AField: String; AValue: String): TJSONObject;
+
       function DAO: ISimpleDAO<T>;
       function DataSet: TDataSet;
       function DataSetAsJSONArray: TJSONArray;
@@ -92,6 +95,20 @@ end;
 function TGenericDAO<T>.DataSetAsJSONObject: TJSONObject;
 begin
   Result := FDataSource.DataSet.AsJSONObject;
+end;
+
+procedure TGenericDAO<T>.SetConfigs(AConfig: TDAOConfigEntity);
+begin
+  if AConfig.WhereClause <> '' then
+  begin
+    FDAO.SQL.Where(AConfig.WhereClause);
+  end;
+  if AConfig.OrderByClause <> '' then
+  begin
+    FDAO.SQL.OrderBy(AConfig.OrderByClause);
+  end;
+
+  FDAO.SQL.&End;
 end;
 
 function TGenericDAO<T>.Delete(AField, AValue: String): TJSONObject;
@@ -136,41 +153,18 @@ begin
   end;
 end;
 
-function TGenericDAO<T>.FindByFieldExactly(const AField,
-  AValue: String): TJSONArray;
+function TGenericDAO<T>.Find(AConfig: TDAOConfigEntity): TJSONArray;
 begin
   try
-    FDAO
-      .SQL
-      .Where(AField + ' = ' + QuotedStr(AValue))
-      .&End
-      .Find;
+    Self.SetConfigs(AConfig);
 
-    if FDataSource.DataSet.AsJSONArray = nil then
-    begin
-      Exit(TJSONArray.Create);
-    end;
-    Result := FDataSource.DataSet.AsJSONArray;
-  except on E: Exception do
-    raise EHorseException.New.Error(E.Message).Status(THTTPStatus.InternalServerError);
-  end;
-end;
+    FDAO.Find;
 
-function TGenericDAO<T>.FindByFieldLiked(const AField,
-  AValue: String): TJSONArray;
-begin
-  try
-    FDAO
-      .SQL
-      .Where(AField + ' like ' + QuotedStr(AValue + '%'))
-      .&End
-      .Find;
-
-    if FDataSource.DataSet.AsJSONArray = nil then
-    begin
-      Exit(TJSONArray.Create);
-    end;
-    Result := FDataSource.DataSet.AsJSONArray;
+      if FDataSource.DataSet.AsJSONArray = nil then
+      begin
+        Exit(TJSONArray.Create);
+      end;
+      Result := FDataSource.DataSet.AsJSONArray;
   except on E: Exception do
     raise EHorseException.New.Error(E.Message).Status(THTTPStatus.InternalServerError);
   end;

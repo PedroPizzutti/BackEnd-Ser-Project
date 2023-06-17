@@ -7,8 +7,10 @@ uses
   System.SysUtils,
   System.JSON,
   SerPrestadores.Utils,
+  SerPrestadores.Model.Dao.Config,
   SerPrestadores.Model.Dao.GenericDAO,
   SerPrestadores.Model.Success,
+  SerPrestadores.Model.DAO.Entity.Config,
   SerPrestadores.Model.Provider.Entity,
   SerPrestadores.Model.Success.Entity;
 
@@ -28,6 +30,7 @@ type
 
   TModelProvider = class(TInterfacedObject, IModelProvider)
     private
+      var FDAOConfig: TDAOConfigEntity;
       var FId: Int64;
       var FName: String;
       var FJSONProvider: TJSONObject;
@@ -85,7 +88,15 @@ end;
 
 function TModelProvider.GetAllProviders: TJSONArray;
 begin
-  Result := FDAOProvider.Find;
+  FDAOConfig :=
+    TDAOConfig
+      .New
+      .SetOrderByClause('name desc')
+      .GetConfig;
+
+  Result :=
+    FDAOProvider
+      .Find(FDAOConfig);
 end;
 
 function TModelProvider.GetProviderById: TJSONObject;
@@ -95,7 +106,13 @@ end;
 
 function TModelProvider.GetProviderByNameLiked: TJSONArray;
 begin
-  Result := FDAOProvider.FindByFieldLiked('name', FName);
+  FDAOConfig :=
+    TDAOConfig
+      .New
+      .SetWhereClause('name like ' + QuotedStr(FName + '%'))
+      .GetConfig;
+
+  Result := FDAOProvider.Find(FDAOConfig);
 end;
 
 class function TModelProvider.New: IModelProvider;

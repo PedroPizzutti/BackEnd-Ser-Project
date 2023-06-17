@@ -21,7 +21,9 @@ uses
   SerPrestadores.Model.Token.Entity in 'src\model\token\entity\SerPrestadores.Model.Token.Entity.pas',
   SerPrestadores.Model.User in 'src\model\user\SerPrestadores.Model.User.pas',
   SerPrestadores.Model.Dao.GenericDAO in 'src\model\dao\SerPrestadores.Model.Dao.GenericDAO.pas',
-  SerPrestadores.Model.Provider in 'src\model\provider\SerPrestadores.Model.Provider.pas';
+  SerPrestadores.Model.Provider in 'src\model\provider\SerPrestadores.Model.Provider.pas',
+  SerPrestadores.Model.Dao.Config in 'src\model\dao\SerPrestadores.Model.Dao.Config.pas',
+  SerPrestadores.Model.DAO.Entity.Config in 'src\model\dao\entity\SerPrestadores.Model.DAO.Entity.Config.pas';
 
 var
 
