@@ -24,9 +24,8 @@ type
     function PostProvider: TJSONObject;
     function UpdateProvider: TJSONObject;
     function DeleteProvider: TJSONObject;
-    function GetAllProviders: TJSONArray;
+    function GetProviders: TJSONArray;
     function GetProviderById: TJSONObject;
-    function GetProviderByNameLiked: TJSONArray;
   end;
 
   TModelProvider = class(TInterfacedObject, IModelProvider)
@@ -46,9 +45,8 @@ type
     function PostProvider: TJSONObject;
     function UpdateProvider: TJSONObject;
     function DeleteProvider: TJSONObject;
-    function GetAllProviders: TJSONArray;
+    function GetProviders: TJSONArray;
     function GetProviderById: TJSONObject;
-    function GetProviderByNameLiked: TJSONArray;
 
     procedure ValidateFieldsProvider;
   public
@@ -89,12 +87,13 @@ begin
   inherited;
 end;
 
-function TModelProvider.GetAllProviders: TJSONArray;
+function TModelProvider.GetProviders: TJSONArray;
 begin
   FDAOConfig :=
     TDAOConfig
       .New
-      .SetOrderByClause('name desc')
+      .SetOrderByClause(FOrder)
+      .SetWhereClause('name like ' + QuotedStr(FName + '%'))
       .GetConfig;
 
   Result :=
@@ -105,17 +104,6 @@ end;
 function TModelProvider.GetProviderById: TJSONObject;
 begin
   Result := FDAOProvider.FindById(FId);
-end;
-
-function TModelProvider.GetProviderByNameLiked: TJSONArray;
-begin
-  FDAOConfig :=
-    TDAOConfig
-      .New
-      .SetWhereClause('name like ' + QuotedStr(FName + '%'))
-      .GetConfig;
-
-  Result := FDAOProvider.Find(FDAOConfig);
 end;
 
 class function TModelProvider.New: IModelProvider;
