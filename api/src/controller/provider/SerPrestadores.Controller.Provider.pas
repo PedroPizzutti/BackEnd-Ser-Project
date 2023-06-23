@@ -25,7 +25,8 @@ type
   TControllerProvider = class(THorseGBSwagger)
     public
       [SwagGET('', 'lists all the providers')]
-      [SwagParamQuery('name', 'order by asc or desc')]
+      [SwagParamQuery('orderName', 'order name by asc or desc')]
+      [SwagParamQuery('filterName', 'filter by name')]
       [SwagResponse(200, TProviderEntity, 'provider list' ,True)]
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
@@ -37,13 +38,6 @@ type
       [SwagResponse(400, TErrorEntity)]
       [SwagResponse(500, TErrorEntity)]
       procedure GetById;
-
-      [SwagGET('/search', 'lists all the providers with liked name')]
-      [SwagParamQuery('name', 'filter by name')]
-      [SwagResponse(200, TProviderEntity, 'filtered provider list')]
-      [SwagResponse(400, TErrorEntity)]
-      [SwagResponse(500, TErrorEntity)]
-      procedure GetByName;
 
       [SwagPOST('', 'create a provider')]
       [SwagResponse(201, TSuccessEntity)]
@@ -89,16 +83,19 @@ end;
 
 procedure TControllerProvider.Get;
 var
+  LName: String;
   LOrdenation: String;
   LResponse: TJSONArray;
 begin
-  LOrdenation := FRequest.Query.Items['name'];
+  LName := FRequest.Query.Items['filterName'];
+  LOrdenation := FRequest.Query.Items['orderName'];
 
   LResponse :=
     TModelProvider
       .New
+      .SetName(LName)
       .SetOrder('name', LOrdenation)
-      .GetAllProviders;
+      .GetProviders;
 
   FResponse.Send<TJSONArray>(LResponse);
 end;
@@ -118,22 +115,6 @@ begin
       .GetProviderById;
 
   FResponse.Send<TJSONObject>(LResponse);
-end;
-
-procedure TControllerProvider.GetByName;
-var
-  LName : String;
-  LResponse: TJSONArray;
-begin
-  LName := FRequest.Query.Items['name'];
-
-  LResponse :=
-    TModelProvider
-      .New
-      .SetName(LName)
-      .GetProviderByNameLiked;
-
-  FResponse.Send<TJSONArray>(LResponse);
 end;
 
 procedure TControllerProvider.Post;
