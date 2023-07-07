@@ -189,6 +189,7 @@ begin
     LFieldsToValidate.Add('phone');
     LFieldsToValidate.Add('email');
     LFieldsToValidate.Add('cpf');
+    LFieldsToValidate.Add('color');
 
     TUtils.ValidateFieldsString(FJSONProvider, LFieldsToValidate);
   finally
