@@ -14,6 +14,8 @@ type
   TProviderEntity = class
     private
       var FName: String;
+    FColor: String;
+    procedure SetColor(const Value: String);
       var FEmail: String;
       var FCpf: String;
       var FBio: String;
@@ -67,6 +69,11 @@ type
       [SwagProp('profilePic', 'profile picture')]
       [Campo('profilePic')]
       property ProfilePic: String read FProfilePic write SetProfilePic;
+
+      [SwagString]
+      [SwagProp('color', 'color')]
+      [Campo('color')]
+      property Color: String read FColor write SetColor;
   end;
 
 implementation
@@ -76,6 +83,11 @@ implementation
 procedure TProviderEntity.SetBio(const Value: String);
 begin
   FBio := Value;
+end;
+
+procedure TProviderEntity.SetColor(const Value: String);
+begin
+  FColor := Value;
 end;
 
 procedure TProviderEntity.SetCpf(const Value: String);
